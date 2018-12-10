@@ -76,9 +76,10 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			let visibleIndexPaths = view.indexPathsForVisibleItems
 			
 			for indexPath in visibleIndexPaths {
-				guard let cell = view.cellForItem(at: indexPath) else { continue }
+				guard let cell = view.cellForItem(at: indexPath) as? CollectionViewCell<T> else { continue }
 				let listItem = newList.sections[indexPath.section].items[indexPath.item]
-				listItem.fill(listItem.value, cell)
+				
+				cell.fill(listItem)
 			}
 		}
 		else {
@@ -164,9 +165,8 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: listItem.reuseId, for: indexPath)
 		
-		if let cell = cell as? CollectionViewCell<T> {
-			cell.fill(listItem)
-		}
+		let fillCell = cell as! CollectionViewCell<T>
+		fillCell.fill(listItem)
 		
 		return cell
 	}

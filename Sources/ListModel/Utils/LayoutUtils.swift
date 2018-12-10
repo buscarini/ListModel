@@ -64,8 +64,8 @@ public struct LayoutUtils {
 		return constraint
 	}
 
-	public static func embedSearchBar(_ view: UISearchBar) -> UIView {
-		let container = UIView()
+	public static func embedSearchBar(_ view: UISearchBar) -> ContainerView<UISearchBar> {
+		let container = ContainerView<UISearchBar>()
 		container.addSubview(view)
 	
 		let topC = NSLayoutConstraint(item: container, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: 0)
@@ -84,8 +84,8 @@ public struct LayoutUtils {
 		return container
 	}
 	
-	public static func embedToAllowResize<V: UIView>(_ view: V) -> UIView {
-		let container = UIView()
+	public static func embedToAllowResize<V: UIView>(_ view: V) -> ContainerView<V> {
+		let container = ContainerView<V>()
 		container.addSubview(view)
 	
 		let topC = NSLayoutConstraint(item: container, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: 0)

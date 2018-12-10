@@ -10,7 +10,7 @@ import UIKit
 
 public extension List {
 
-	public static func tableFrom<V: UIView>(
+	public static func listFrom<V: UIView>(
 		_ items: [T],
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (T?, V) -> Void,

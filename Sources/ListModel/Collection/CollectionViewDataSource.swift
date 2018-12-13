@@ -185,14 +185,14 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 				
 				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: viewId, for: indexPath)
 		
-				let cell = view as! CollectionViewReusableView<T>
+				let cell = view as! CollectionViewReusableView<HeaderT>
 				cell.fill(header)
 			
 			case UICollectionView.elementKindSectionFooter:
 				let footer = list.sections[section].footer!
 				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: footer.reuseId, for: indexPath)
 		
-				let cell = view as! CollectionViewReusableView<T>
+				let cell = view as! CollectionViewReusableView<FooterT>
 				cell.fill(footer)
 			
 			default:

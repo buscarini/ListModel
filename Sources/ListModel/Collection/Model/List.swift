@@ -37,13 +37,4 @@ public struct List<T: Equatable, HeaderT: Equatable, FooterT: Equatable> : Equat
 		self.configuration = configuration
 	}
 }
-//
-//public func ==<T, HeaderT, FooterT>(lhs: List<T, HeaderT, FooterT>, rhs: List<T, HeaderT, FooterT>) -> Bool {
-//	guard lhs.sections == rhs.sections else { return false }
-//	guard lhs.header == rhs.header else { return false }
-//	guard lhs.footer == rhs.footer else { return false }
-//
-//	guard lhs.scrollInfo == rhs.scrollInfo else { return false }
-//
-//	return true
-//}
+

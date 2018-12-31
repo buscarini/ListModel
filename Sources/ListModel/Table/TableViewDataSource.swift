@@ -505,7 +505,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		
 		let configuration = row.configuration
 		
-		let animated = row.onSelect != nil && configuration?.selectionStyle != UITableViewCell.SelectionStyle.none
+		let animated = row.onSelect != nil && configuration?.selectionStyle != .noStyle
 		
 		tableView.deselectRow(at: indexPath, animated: animated)
 		

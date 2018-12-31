@@ -14,7 +14,7 @@ public struct TableRowConfiguration<T: Equatable>: Equatable {
 	public var indentationLevel : Int?
 	public var indentationWidth : CGFloat?
 	public var separatorInset: UIEdgeInsets?
-	public var selectionStyle: UITableViewCell.SelectionStyle?
+	public var selectionStyle: TableRowSelectionStyle?
 	public var backgroundColor: UIColor?
 	
 	public init(accessoryType: TableRowAccessoryType = .none,
@@ -23,7 +23,7 @@ public struct TableRowConfiguration<T: Equatable>: Equatable {
 				indentationLevel: Int? = nil,
 				indentationWidth: CGFloat? = nil,
 				separatorInset: UIEdgeInsets? = nil,
-				selectionStyle: UITableViewCell.SelectionStyle? = nil,
+				selectionStyle: TableRowSelectionStyle? = nil,
 				backgroundColor: UIColor? = UIColor.white
 		) {
 		self.accessoryType = accessoryType

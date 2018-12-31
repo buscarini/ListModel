@@ -7,7 +7,7 @@ extension SearchView {
 	func setupDataSource() {
 		self.dataSource = DataSource(view: self.tableView, filter: self.filter)
 
-		if let searchDataSource = self.dataSource as? SearchTableViewDataSource<T, HeaderT, FooterT> {
+		if let searchDataSource = self.dataSource {
 //			searchDataSource.searchController.searchBar.barTintColor = ThemeColor.blue
 			searchDataSource.searchController.hidesNavigationBarDuringPresentation = false
 			searchDataSource.searchController.dimsBackgroundDuringPresentation = false

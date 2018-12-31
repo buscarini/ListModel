@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		AC033D1921BE97D500BC0AA5 /* ContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC033D1821BE97D500BC0AA5 /* ContainerView.swift */; };
+		AC90669C21DA1AEF00785896 /* TableRowSelectionStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90669B21DA1AEF00785896 /* TableRowSelectionStyle.swift */; };
 		OBJ_100 /* CollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* CollectionViewDataSource.swift */; };
 		OBJ_101 /* CollectionViewReusableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* CollectionViewReusableView.swift */; };
 		OBJ_102 /* ColumnsRowsLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_15 /* ColumnsRowsLayout.swift */; };
@@ -112,6 +113,8 @@
 
 /* Begin PBXFileReference section */
 		AC033D1821BE97D500BC0AA5 /* ContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerView.swift; sourceTree = "<group>"; };
+		AC90669B21DA1AEF00785896 /* TableRowSelectionStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableRowSelectionStyle.swift; sourceTree = "<group>"; };
+		ACD32AFD21DA1359008D1B04 /* Example.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Example.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		"ListModel::ListModel::Product" /* ListModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ListModel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"ListModel::ListModelTests::Product" /* ListModelTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = ListModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_11 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
@@ -284,6 +287,7 @@
 				OBJ_49 /* TableRowAction.swift */,
 				OBJ_50 /* TableRowActionStyle.swift */,
 				OBJ_51 /* TableRowConfiguration.swift */,
+				AC90669B21DA1AEF00785896 /* TableRowSelectionStyle.swift */,
 				OBJ_52 /* TableSection.swift */,
 			);
 			path = Model;
@@ -298,16 +302,16 @@
 			path = Scroll;
 			sourceTree = "<group>";
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
+				ACD32AFD21DA1359008D1B04 /* Example.playground */,
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_83 /* Tests */,
 				OBJ_89 /* Configs */,
 				OBJ_90 /* Products */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_53 /* Search */ = {
@@ -478,7 +482,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_90 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -539,6 +543,7 @@
 				OBJ_119 /* EmptyType.swift in Sources */,
 				OBJ_120 /* TableScrollInfo.swift in Sources */,
 				OBJ_121 /* TableScrollPosition.swift in Sources */,
+				AC90669C21DA1AEF00785896 /* TableRowSelectionStyle.swift in Sources */,
 				OBJ_122 /* Table+Constructors.swift in Sources */,
 				OBJ_123 /* Table+Filtrable.swift in Sources */,
 				OBJ_124 /* Table+Utils.swift in Sources */,

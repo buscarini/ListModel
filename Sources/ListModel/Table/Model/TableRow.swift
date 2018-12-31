@@ -17,8 +17,8 @@ public struct TableRow<T: Equatable>: Equatable {
 	let viewConstructor: ViewConstructor
 	let fill: Fill
 	
-	public var id: String
-	public var reuseId: String
+	var id: String
+	var reuseId: String
 	public var value: T?
 	
 	/// View Specific Configuration
@@ -46,7 +46,7 @@ public struct TableRow<T: Equatable>: Equatable {
 	public static func create<V: UIView>(
 		viewConstructor: @escaping (() -> V),
 		id: String,
-		reuseId: String,
+		reuseId: String = String(describing: V.self),
 		fill: @escaping (T?, V) -> Void,
 		value: T?,
 		configuration: TableRowConfiguration<T>? = nil,
@@ -55,7 +55,7 @@ public struct TableRow<T: Equatable>: Equatable {
 	{
 		return TableRow.init(
 			viewConstructor: viewConstructor,
-			id: id,
+			id: id + String(describing: T.self),
 			reuseId: reuseId,
 			fill: { (m, v) in
 				fill(m, v as! V)

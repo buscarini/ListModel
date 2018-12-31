@@ -42,7 +42,7 @@ public extension Table {
 		nibName: String,
 		bundle: Bundle?,
 		id: String,
-		reuseId: String,
+		reuseId: String = String(describing: V.self),
 		fill: @escaping (T?, V) -> Void,
 		value: T?,
 		configuration: Row.Configuration? = nil,

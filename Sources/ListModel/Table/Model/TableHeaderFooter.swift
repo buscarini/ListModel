@@ -33,7 +33,7 @@ public struct TableHeaderFooter<T: Equatable>: Equatable {
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (T?, V) -> Void,
 		id: String,
-		reuseId: String,
+		reuseId: String = String(describing: V.self),
 		value: T? = nil,
 		onSelect: ((TableHeaderFooter)->())? = nil) -> TableHeaderFooter
 	{
@@ -42,7 +42,7 @@ public struct TableHeaderFooter<T: Equatable>: Equatable {
 			fill: { (m, v) in
 				fill(m, v as! V)
 			},
-			id: id,
+			id: id + String(describing: T.self),
 			reuseId: reuseId,
 			value: value,
 			onSelect: onSelect)

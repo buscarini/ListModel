@@ -28,7 +28,7 @@ open class TableViewCell<T : Equatable> : UITableViewCell {
 		self.indentationLevel = config?.indentationLevel ?? 0
 		self.indentationWidth = config?.indentationWidth ?? 10.0
 		
-		self.selectionStyle = config?.selectionStyle ?? (canBeSelected ? .default : .none)
+		self.selectionStyle = config?.selectionStyle?.uiKit ?? (canBeSelected ? .default : .none)
 		
 		self.backgroundColor = config?.backgroundColor
 	}
@@ -60,5 +60,3 @@ extension TableViewCell {
 		self.update(row.configuration, canBeSelected: row.onSelect != nil)
 	}
 }
-
-

@@ -66,7 +66,7 @@ public extension Table {
 	public static func row<V: UIView>(
 		viewConstructor: @escaping () -> V,
 		id: String,
-		reuseId: String,
+		reuseId: String = String(describing: V.self),
 		fill: @escaping (T?, V) -> Void,
 		value: T?,
 		configuration: Row.Configuration? = nil,
@@ -88,7 +88,7 @@ public extension Table {
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (HeaderT?, V) -> Void,
 		id: String,
-		reuseId: String,
+		reuseId: String = String(describing: V.self),
 		value: HeaderT? = nil,
 		onSelect: Table.Header.OnSelect? = nil) -> Table.Header {
 		return Table.Header.create(
@@ -105,7 +105,7 @@ public extension Table {
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (FooterT?, V) -> Void,
 		id: String,
-		reuseId: String,
+		reuseId: String = String(describing: V.self),
 		value: FooterT? = nil,
 		onSelect: Footer.OnSelect? = nil) -> Footer {
 		return Footer.create(

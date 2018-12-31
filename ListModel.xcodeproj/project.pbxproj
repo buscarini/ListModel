@@ -114,7 +114,7 @@
 /* Begin PBXFileReference section */
 		AC033D1821BE97D500BC0AA5 /* ContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerView.swift; sourceTree = "<group>"; };
 		AC90669B21DA1AEF00785896 /* TableRowSelectionStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableRowSelectionStyle.swift; sourceTree = "<group>"; };
-		ACD32AFD21DA1359008D1B04 /* Example.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = Example.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		AC90669D21DA1D5500785896 /* ListModel.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = ListModel.podspec; sourceTree = "<group>"; };
 		"ListModel::ListModel::Product" /* ListModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ListModel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"ListModel::ListModelTests::Product" /* ListModelTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = ListModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_11 /* CollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionViewCell.swift; sourceTree = "<group>"; };
@@ -305,7 +305,7 @@
 		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
-				ACD32AFD21DA1359008D1B04 /* Example.playground */,
+				AC90669D21DA1D5500785896 /* ListModel.podspec */,
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_83 /* Tests */,

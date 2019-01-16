@@ -71,11 +71,26 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		self.view.endUpdates()
 	}
 	
+	private var _table: Table?
+	
 	public var table: Table? {
-		didSet {
-			TableViewDataSource.registerViews(self.table,tableView: self.view)
-			self.update(oldValue, newTable: self.table)
+		set {
+			let oldValue = _table
+			_table = newValue
+			TableViewDataSource.registerViews(newValue,tableView: self.view)
+			self.update(oldValue, newTable: newValue, completion: {})
 		}
+		
+		get {
+			return _table
+		}
+	}
+	
+	public func update(table: Table?, completion: @escaping () -> Void) {
+		let oldValue = _table
+		_table = table
+		TableViewDataSource.registerViews(table,tableView: self.view)
+		self.update(oldValue, newTable: table, completion: completion)
 	}
 	
 	public func startRefreshing() { self.isRefreshing = true }
@@ -98,13 +113,15 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		}
 	}
 	
-	fileprivate func update(_ oldTable: Table?, newTable: Table?) {
+	fileprivate func update(_ oldTable: Table?, newTable: Table?, completion: @escaping () -> Void) {
 		self.updateSections(oldTable, newTable: newTable) {
 			self.updateHeaderFooter(newTable, oldTable: oldTable)
 			self.updateScroll(newTable)
 			self.updatePullToRefresh(oldTable, newTable: newTable)
 			
 			self.contentSizeChanged?(self.view.contentSize)
+			
+			completion()
 		}
 	}
 	

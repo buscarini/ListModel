@@ -16,9 +16,9 @@ public extension Table {
 		fill: @escaping (T?, V) -> Void,
 		configuration: TableConfiguration? = nil,
 		scrollInfo: TableScrollInfo? = nil,
-		itemConfiguration: TableRowConfiguration<T>? = nil
-	) -> Table<T, HeaderT, FooterT>
-	{
+		itemConfiguration: TableRowConfiguration<T>? = nil,
+		onSelect: ((TableRow<T>) -> ())? = nil
+	) -> Table<T, HeaderT, FooterT> {
 		let rows = zip(0..., items).map { (index, item) in
 			Table.Row.create(
 				viewConstructor: viewConstructor,
@@ -26,7 +26,8 @@ public extension Table {
 				reuseId: "cell",
 				fill: fill,
 				value: item,
-				configuration: itemConfiguration
+				configuration: itemConfiguration,
+				onSelect: onSelect
 			)
 		}
 		
@@ -43,7 +44,8 @@ public extension Table {
 		reuseId: String = String(describing: V.self),
 		fill: @escaping (T?, V) -> Void,
 		value: T?,
-		configuration: Row.Configuration? = nil
+		configuration: Row.Configuration? = nil,
+		onSelect: Row.OnSelect? = nil
 	) -> Row {
 		return Row.create(
 			viewConstructor: {
@@ -55,7 +57,8 @@ public extension Table {
 			reuseId: reuseId,
 			fill: fill,
 			value: value,
-			configuration: configuration
+			configuration: configuration,
+			onSelect: onSelect
 		)
 	}
 	

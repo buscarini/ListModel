@@ -46,7 +46,7 @@ public struct ListItem<T: Equatable>: Equatable {
 	public static func create<V: UIView>(
 		viewConstructor: @escaping (() -> V),
 		id: String,
-		reuseId: String,
+		reuseId: String = String(describing: V.self),
 		fill: @escaping (T?, V) -> Void,
 		value: T?,
 		configuration: ListItemConfiguration<T>? = nil,

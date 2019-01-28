@@ -42,7 +42,7 @@ public extension List {
 		nibName: String,
 		bundle: Bundle?,
 		id: String,
-		reuseId: String,
+		reuseId: String = String(describing: V.self),
 		fill: @escaping (T?, V) -> Void,
 		value: T?,
 		configuration: Item.Configuration? = nil,
@@ -66,7 +66,7 @@ public extension List {
 	public static func item<V: UIView>(
 		viewConstructor: @escaping () -> V,
 		id: String,
-		reuseId: String,
+		reuseId: String = String(describing: V.self),
 		fill: @escaping (T?, V) -> Void,
 		value: T?,
 		configuration: Item.Configuration? = nil,
@@ -88,16 +88,16 @@ public extension List {
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (HeaderT?, V) -> Void,
 		id: String,
-		reuseId: String,
-		value: HeaderT? = nil,
-		onSelect: List.Header.OnSelect? = nil) -> List.Header {
+		reuseId: String = String(describing: V.self),
+		value: HeaderT? = nil
+	) -> List.Header {
 		return List.Header.create(
 			viewConstructor: viewConstructor,
 			fill: fill,
 			id: id,
 			reuseId: reuseId,
-			value: value,
-			onSelect: onSelect)
+			value: value
+		)
 	}
 	
 	// MARK: Footer constructors
@@ -105,15 +105,15 @@ public extension List {
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (FooterT?, V) -> Void,
 		id: String,
-		reuseId: String,
-		value: FooterT? = nil,
-		onSelect: Footer.OnSelect? = nil) -> Footer {
+		reuseId: String = String(describing: V.self),
+		value: FooterT? = nil
+	) -> Footer {
 		return Footer.create(
 			viewConstructor: viewConstructor,
 			fill: fill,
 			id: id,
 			reuseId: reuseId,
-			value: value,
-			onSelect: onSelect)
+			value: value
+		)
 	}
 }

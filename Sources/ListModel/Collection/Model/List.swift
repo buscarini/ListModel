@@ -10,7 +10,6 @@ import UIKit
 public struct List<T: Equatable, HeaderT: Equatable, FooterT: Equatable> : Equatable {
 	
 	public typealias Configuration = ListConfiguration<T>
-	public typealias ItemConfiguration = ListItemConfiguration<T>
 	
 	public typealias Section = ListSection<T,HeaderT,FooterT>
 	public typealias Header = ListHeaderFooter<HeaderT>

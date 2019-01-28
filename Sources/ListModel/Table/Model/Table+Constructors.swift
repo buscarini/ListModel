@@ -16,9 +16,8 @@ public extension Table {
 		fill: @escaping (T?, V) -> Void,
 		configuration: TableConfiguration? = nil,
 		scrollInfo: TableScrollInfo? = nil,
-		itemConfiguration: TableRowConfiguration<T>? = nil,
-		onSelect: ((TableRow<T>) -> ())? = nil)
-		-> Table<T, HeaderT, FooterT>
+		itemConfiguration: TableRowConfiguration<T>? = nil
+	) -> Table<T, HeaderT, FooterT>
 	{
 		let rows = zip(0..., items).map { (index, item) in
 			Table.Row.create(
@@ -27,8 +26,7 @@ public extension Table {
 				reuseId: "cell",
 				fill: fill,
 				value: item,
-				configuration: itemConfiguration,
-				onSelect: onSelect
+				configuration: itemConfiguration
 			)
 		}
 		
@@ -45,9 +43,8 @@ public extension Table {
 		reuseId: String = String(describing: V.self),
 		fill: @escaping (T?, V) -> Void,
 		value: T?,
-		configuration: Row.Configuration? = nil,
-		onSelect: Row.OnSelect? = nil) -> Row
-	{
+		configuration: Row.Configuration? = nil
+	) -> Row {
 		return Row.create(
 			viewConstructor: {
 				let viewBundle = bundle ?? Bundle.main
@@ -58,8 +55,7 @@ public extension Table {
 			reuseId: reuseId,
 			fill: fill,
 			value: value,
-			configuration: configuration,
-			onSelect: onSelect
+			configuration: configuration
 		)
 	}
 	
@@ -70,8 +66,8 @@ public extension Table {
 		fill: @escaping (T?, V) -> Void,
 		value: T?,
 		configuration: Row.Configuration? = nil,
-		onSelect: Row.OnSelect? = nil) -> Row
-	{
+		onSelect: Row.OnSelect? = nil
+	) -> Row {
 		return Row.create(
 			viewConstructor: viewConstructor,
 			id: id,
@@ -89,15 +85,15 @@ public extension Table {
 		fill: @escaping (HeaderT?, V) -> Void,
 		id: String,
 		reuseId: String = String(describing: V.self),
-		value: HeaderT? = nil,
-		onSelect: Table.Header.OnSelect? = nil) -> Table.Header {
+		value: HeaderT? = nil
+	) -> Table.Header {
 		return Table.Header.create(
 			viewConstructor: viewConstructor,
 			fill: fill,
 			id: id,
 			reuseId: reuseId,
-			value: value,
-			onSelect: onSelect)
+			value: value
+		)
 	}
 	
 	// MARK: Footer constructors
@@ -106,14 +102,14 @@ public extension Table {
 		fill: @escaping (FooterT?, V) -> Void,
 		id: String,
 		reuseId: String = String(describing: V.self),
-		value: FooterT? = nil,
-		onSelect: Footer.OnSelect? = nil) -> Footer {
+		value: FooterT? = nil
+	) -> Footer {
 		return Footer.create(
 			viewConstructor: viewConstructor,
 			fill: fill,
 			id: id,
 			reuseId: reuseId,
-			value: value,
-			onSelect: onSelect)
+			value: value
+		)
 	}
 }

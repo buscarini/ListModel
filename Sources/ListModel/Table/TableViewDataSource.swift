@@ -24,6 +24,8 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	public var onCellShow: CellDisplayEvent?
 	public var onCellHide: CellDisplayEvent?
 	
+	private var needsUpdate = false
+	
 	public var view : UITableView {
 		didSet {
 			self.viewChanged()
@@ -90,6 +92,12 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		let oldValue = _table
 		_table = table
 		TableViewDataSource.registerViews(table,tableView: self.view)
+		
+		guard self.view.bounds.size.width > 0 else {
+			self.needsUpdate = true
+			return
+		}
+		
 		self.update(oldValue, newTable: table, completion: completion)
 	}
 	
@@ -115,11 +123,15 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	
 	fileprivate func update(_ oldTable: Table?, newTable: Table?, completion: @escaping () -> Void) {
 		self.updateSections(oldTable, newTable: newTable) {
+			
 			self.updateHeaderFooter(newTable, oldTable: oldTable)
+			
 			self.updateScroll(newTable)
 			self.updatePullToRefresh(oldTable, newTable: newTable)
 			
 			self.contentSizeChanged?(self.view.contentSize)
+			
+			self.needsUpdate = false
 			
 			completion()
 		}
@@ -129,10 +141,15 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		view.rowHeight = UITableView.automaticDimension
 	
 		let visibleIndexPaths = self.view.indexPathsForVisibleRows
+		
+		guard self.needsUpdate == false else {
+			self.view.reloadData()
+			completion?()
+			return
+		}
 	
 		self.updateQueue.async {
-			if	let oldTable = oldTable, let newTable = newTable, Table.sameItemsCount(oldTable, newTable) {
-				
+			if let oldTable = oldTable, let newTable = newTable, Table.sameItemsCount(oldTable, newTable) {
 				let (changedIndexPaths, notVisibleIndexPaths) = Table.itemsChangedPaths(oldTable, newTable).partition {
 					indexPath in
 					return visibleIndexPaths?.contains(indexPath) ?? true
@@ -208,11 +225,36 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	fileprivate func updateHeaderFooter(_ newTable: Table?, oldTable: Table?) {
-		if oldTable?.header != newTable?.header {
+		addTableHeader(newTable, oldTable: oldTable)
+		addTableFooter(newTable, oldTable: oldTable)
+
+//		NSLayoutConstraint.activate([
+//			self.view.tableHeaderView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//			self.view.tableHeaderView?.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+//			self.view.tableHeaderView?.topAnchor.constraint(equalTo: self.view.topAnchor)
+//		].compactMap { $0 })
+//
+//		NSLayoutConstraint.activate([
+//			self.view.tableFooterView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+//			self.view.tableFooterView?.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+//			self.view.tableFooterView?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+//		].compactMap { $0 })
+//
+		self.view.tableHeaderView?.layoutIfNeeded()
+		self.view.tableFooterView?.layoutIfNeeded()
+		
+		self.view.tableHeaderView = self.view.tableHeaderView
+		self.view.tableFooterView = self.view.tableFooterView
+	}
+	
+	fileprivate func addTableHeader(_ newTable: Table?, oldTable: Table?) {
+		if oldTable?.header != newTable?.header || self.needsUpdate || TableViewDataSource.hasChanged(oldTable?.configuration, newTable?.configuration) {
 			self.view.tableHeaderView = self.tableHeaderView(newTable)
 		}
-		
-		if oldTable?.footer != newTable?.footer || TableViewDataSource.hasChanged(oldTable?.configuration, newTable?.configuration) {
+	}
+	
+	fileprivate func addTableFooter(_ newTable: Table?, oldTable: Table?) {
+		if oldTable?.footer != newTable?.footer || self.needsUpdate || TableViewDataSource.hasChanged(oldTable?.configuration, newTable?.configuration)  {
 			self.view.tableFooterView = self.tableFooterView(newTable)
 		}
 	}
@@ -227,12 +269,15 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	private func layout(view: UIView, inWidth width: CGFloat) {
+		guard width > 0 else { return }
+		
 		view.translatesAutoresizingMaskIntoConstraints = false
-			
+		
 		let sameWidth = NSLayoutConstraint(item: view, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: width)
 		
 		view.addConstraint(sameWidth)
 		
+		view.setNeedsLayout()
 		view.layoutSubviews()
 		
 		view.frame.size = view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)

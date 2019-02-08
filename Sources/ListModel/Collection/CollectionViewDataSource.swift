@@ -14,8 +14,10 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	public typealias SizeChanged = (CGSize) -> ()
 	public var contentSizeChanged: SizeChanged?
 	
-	public typealias CellDisplayEvent = (UICollectionViewCell, UIView, Item, IndexPath) -> ()
+	public typealias CellDisplayEvent = (UICollectionViewCell, UIView?, Item, IndexPath) -> ()
 	public var onCellShow: CellDisplayEvent?
+	public var onWillConfigureCell: CellDisplayEvent?
+	public var onDidConfigureCell: CellDisplayEvent?
 	public var onCellHide: CellDisplayEvent?
 
 	public init(view: UICollectionView) {
@@ -79,7 +81,11 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 				guard let cell = view.cellForItem(at: indexPath) as? CollectionViewCell<T> else { continue }
 				let listItem = newList.sections[indexPath.section].items[indexPath.item]
 				
+				onWillConfigureCell?(cell, cell.view, listItem, indexPath)
+
 				cell.fill(listItem)
+				
+				onDidConfigureCell?(cell, cell.view, listItem, indexPath)
 			}
 		}
 		else {
@@ -164,9 +170,14 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 		let listItem = List.itemAt(list, indexPath: indexPath)!
 
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: listItem.reuseId, for: indexPath)
-		
 		let fillCell = cell as! CollectionViewCell<T>
+		
+		onWillConfigureCell?(cell, fillCell.view, listItem, indexPath)
+		
+		
 		fillCell.fill(listItem)
+		
+		onDidConfigureCell?(cell, fillCell.view, listItem, indexPath)
 		
 		return cell
 	}

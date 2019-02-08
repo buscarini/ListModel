@@ -20,8 +20,10 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	public typealias SizeChanged = (CGSize) -> ()
 	public var contentSizeChanged: SizeChanged?
 	
-	public typealias CellDisplayEvent = (UITableViewCell, UIView, Row, IndexPath) -> ()
+	public typealias CellDisplayEvent = (UITableViewCell, UIView?, Row, IndexPath) -> ()
 	public var onCellShow: CellDisplayEvent?
+	public var onWillConfigureCell: CellDisplayEvent?
+	public var onDidConfigureCell: CellDisplayEvent?
 	public var onCellHide: CellDisplayEvent?
 	
 	private var needsUpdate = false
@@ -456,6 +458,8 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		
 		guard let cell = cell as? TableViewCell<T> else { return }
 		
+		onWillConfigureCell?(cell, cell.view, row, indexPath)
+		
 		let configuration = row.configuration
 		cell.accessoryType = configuration?.accessoryType.cellAccessoryType ?? .none
 		cell.accessoryView = configuration?.accessoryType.cellAccessoryView
@@ -465,6 +469,8 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		_ = configuration?.separatorInset.map { cell.separatorInset = $0 }
 		
 		cell.fill(row)
+		
+		onDidConfigureCell?(cell, cell.view, row, indexPath)
 	}
 	
 	public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

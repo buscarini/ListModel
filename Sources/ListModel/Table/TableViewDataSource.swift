@@ -77,11 +77,26 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	
 	private var _table: Table?
 	
+	private func layoutView() {
+		var v: UIView? = self.view
+		while v?.superview != nil {
+			v = v?.superview
+		}
+		v?.layoutIfNeeded()
+	}
+	
 	public var table: Table? {
 		set {
 			let oldValue = _table
 			_table = newValue
 			TableViewDataSource.registerViews(newValue,tableView: self.view)
+
+//			layoutView()
+//			guard self.view.bounds.size.width > 0 else {
+//				self.needsUpdate = true
+//				return
+//			}
+			
 			self.update(oldValue, newTable: newValue, completion: {})
 		}
 		
@@ -90,15 +105,17 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		}
 	}
 	
-	public func update(table: Table?, completion: @escaping () -> Void) {
+	public func update(table: Table?, completion: @escaping () -> Void) {		
 		let oldValue = _table
 		_table = table
 		TableViewDataSource.registerViews(table,tableView: self.view)
 		
-		guard self.view.bounds.size.width > 0 else {
-			self.needsUpdate = true
-			return
-		}
+//		layoutView()
+
+//		guard self.view.bounds.size.width > 0 else {
+//			self.needsUpdate = true
+//			return
+//		}
 		
 		self.update(oldValue, newTable: table, completion: completion)
 	}
@@ -205,10 +222,22 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	fileprivate func tableHeaderView(_ newTable: Table?) -> UIView? {
-		let headerView = newTable?.header?.createView(self)
-		_ = headerView.map { self.layout(view: $0, inWidth: self.view.bounds.size.width) }
+		let headerContainer = UIView()
+		headerContainer.translatesAutoresizingMaskIntoConstraints = false
 		
-		return headerView
+		
+		
+		if let headerView = newTable?.header?.createView(self) {
+			headerView.translatesAutoresizingMaskIntoConstraints = false
+			headerContainer.addSubview(headerView)
+			return headerView
+		}
+		
+		return nil
+		
+//		_ = headerView.map { self.layout(view: $0, inWidth: self.view.bounds.size.width) }
+		
+//		return headerView
 	}
 	
 	fileprivate func tableFooterView(_ newTable: Table?) -> UIView? {
@@ -230,11 +259,11 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		addTableHeader(newTable, oldTable: oldTable)
 		addTableFooter(newTable, oldTable: oldTable)
 
-//		NSLayoutConstraint.activate([
-//			self.view.tableHeaderView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//			self.view.tableHeaderView?.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-//			self.view.tableHeaderView?.topAnchor.constraint(equalTo: self.view.topAnchor)
-//		].compactMap { $0 })
+		NSLayoutConstraint.activate([
+			self.view.tableHeaderView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+			self.view.tableHeaderView?.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+			self.view.tableHeaderView?.topAnchor.constraint(equalTo: self.view.topAnchor)
+		].compactMap { $0 })
 //
 //		NSLayoutConstraint.activate([
 //			self.view.tableFooterView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
@@ -271,7 +300,10 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	private func layout(view: UIView, inWidth width: CGFloat) {
-		guard width > 0 else { return }
+		guard width > 0 else {
+			self.needsUpdate = true
+			return
+		}
 		
 		view.translatesAutoresizingMaskIntoConstraints = false
 		

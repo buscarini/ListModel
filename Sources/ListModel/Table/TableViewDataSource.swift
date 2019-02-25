@@ -142,15 +142,27 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	
 	fileprivate func update(_ oldTable: Table?, newTable: Table?, completion: @escaping () -> Void) {
 		self.updateSections(oldTable, newTable: newTable) {
+			UIView.performWithoutAnimation {
+				self.view.layoutIfNeeded()
+			}
 			
 			self.updateHeaderFooter(newTable, oldTable: oldTable)
+			
 			
 			self.updateScroll(newTable)
 			self.updatePullToRefresh(oldTable, newTable: newTable)
 			
+			
 			self.contentSizeChanged?(self.view.contentSize)
 			
 			self.needsUpdate = false
+			
+			UIView.performWithoutAnimation {
+				self.view.tableHeaderView?.layoutIfNeeded()
+				self.view.tableHeaderView = self.view.tableHeaderView
+				self.view.tableFooterView?.layoutIfNeeded()
+				self.view.tableFooterView = self.view.tableFooterView
+			}
 			
 			completion()
 		}
@@ -256,32 +268,33 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	fileprivate func updateHeaderFooter(_ newTable: Table?, oldTable: Table?) {
-		addTableHeader(newTable, oldTable: oldTable)
-		addTableFooter(newTable, oldTable: oldTable)
-
-		NSLayoutConstraint.activate([
-			self.view.tableHeaderView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-			self.view.tableHeaderView?.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-			self.view.tableHeaderView?.topAnchor.constraint(equalTo: self.view.topAnchor)
-		].compactMap { $0 })
-//
-//		NSLayoutConstraint.activate([
-//			self.view.tableFooterView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-//			self.view.tableFooterView?.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-//			self.view.tableFooterView?.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-//		].compactMap { $0 })
-//
-		self.view.tableHeaderView?.layoutIfNeeded()
-		self.view.tableFooterView?.layoutIfNeeded()
+		if
+			self.needsUpdate ||
+			oldTable?.header != newTable?.header ||
+			(newTable?.header == nil && self.view.tableHeaderView != nil) ||
+			(newTable?.header != nil && self.view.tableHeaderView == nil) ||
+			TableViewDataSource.hasChanged(oldTable?.configuration, newTable?.configuration) {
+			
+			addTableHeader(newTable, oldTable: oldTable)
+			NSLayoutConstraint.activate([
+				self.view.tableHeaderView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+				self.view.tableHeaderView?.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+				self.view.tableHeaderView?.topAnchor.constraint(equalTo: self.view.topAnchor)
+				].compactMap { $0 })
+			
+			self.view.tableHeaderView?.layoutIfNeeded()
+			self.view.tableHeaderView = self.view.tableHeaderView
+		}
 		
-		self.view.tableHeaderView = self.view.tableHeaderView
+		addTableFooter(newTable, oldTable: oldTable)
+		self.view.tableFooterView?.layoutIfNeeded()
 		self.view.tableFooterView = self.view.tableFooterView
 	}
 	
 	fileprivate func addTableHeader(_ newTable: Table?, oldTable: Table?) {
-		if oldTable?.header != newTable?.header || self.needsUpdate || TableViewDataSource.hasChanged(oldTable?.configuration, newTable?.configuration) {
+//		if oldTable?.header != newTable?.header || self.needsUpdate || TableViewDataSource.hasChanged(oldTable?.configuration, newTable?.configuration) {
 			self.view.tableHeaderView = self.tableHeaderView(newTable)
-		}
+//		}
 	}
 	
 	fileprivate func addTableFooter(_ newTable: Table?, oldTable: Table?) {

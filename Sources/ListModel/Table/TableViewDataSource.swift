@@ -26,6 +26,8 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	public var onDidConfigureCell: CellDisplayEvent?
 	public var onCellHide: CellDisplayEvent?
 	
+	public var scrollDelegate = ScrollViewDelegate()
+	
 	private var needsUpdate = false
 	
 	public var view : UITableView {
@@ -665,6 +667,60 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			return .normal
 		}
 	}
+	
+	// MARK: UIScrollViewDelegate
+	public func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+		return scrollDelegate.shouldScrollToTop?(scrollView) ?? true
+	}
+	
+	public func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+		scrollDelegate.didEndScrollingAnimation?(scrollView)
+	}
+	
+	public func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+		scrollDelegate.willBeginDecelerating?(scrollView)
+	}
+	
+	public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+		scrollDelegate.didEndDecelerating?(scrollView)
+	}
+	
+	public func scrollViewDidZoom(_ scrollView: UIScrollView) {
+		scrollDelegate.didZoom?(scrollView)
+	}
+	
+	public func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
+		scrollDelegate.didScrollToTop?(scrollView)
+	}
+	
+	public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+		scrollDelegate.willBeginDragging?(scrollView)
+	}
+	
+	public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		scrollDelegate.didScroll?(scrollView)
+	}
+	public func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+		scrollDelegate.willEndDragging?(scrollView, velocity, targetContentOffset)
+	}
+	
+	public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+		scrollDelegate.didEndDragging?(scrollView, decelerate)
+	}
+	
+	public func scrollViewDidChangeAdjustedContentInset(_ scrollView: UIScrollView) {
+		scrollDelegate.didChangeAdjustedContentInset?(scrollView)
+	}
+	
+	public func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
+		scrollDelegate.willBeginZooming?(scrollView, view)
+	}
+	
+	public func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+		scrollDelegate.didEndZooming?(scrollView, view, scale)
+	}
+	
+	public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+		return scrollDelegate.viewForZooming?(scrollView)
+	}
 }
-
-

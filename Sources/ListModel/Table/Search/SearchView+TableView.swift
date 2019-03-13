@@ -26,7 +26,7 @@ extension SearchView {
 		let listItems = zip(0..., self.items).map { (index, item) -> DataSource.Table.Row in
 			let config: DataSource.ItemConfiguration? = self.selection.isSelected(item) ? selectedItemConfig : nil
 			
-			return Table.row(viewConstructor: self.viewConstructor, id: "\(id)", reuseId: "cell", fill: self.fill, value: item, configuration: config, onSelect: { selected in
+			return Table.row(viewConstructor: self.viewConstructor, id: "\(index)", reuseId: "cell", fill: self.fill, value: item, configuration: config, onSelect: { selected in
 				self.selection = self.selection.toggle(selected.value)
 				
 				self.updateTable()

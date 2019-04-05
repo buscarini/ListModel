@@ -16,7 +16,7 @@ public enum TableRowSelectionStyle: Int, Equatable {
 }
 
 public extension TableRowSelectionStyle {
-	public var uiKit: UITableViewCell.SelectionStyle {
+	var uiKit: UITableViewCell.SelectionStyle {
 		switch self {
 		case .noStyle:
 			return .none

@@ -9,7 +9,7 @@
 import Foundation
 
 public extension Table {
-	public static func filter(_ filter: @escaping (T?) -> Bool) -> (Table) -> Table {
+	static func filter(_ filter: @escaping (T?) -> Bool) -> (Table) -> Table {
 		return { table in
 			var result = table
 			

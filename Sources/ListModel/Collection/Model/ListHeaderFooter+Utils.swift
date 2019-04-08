@@ -2,7 +2,7 @@
 import UIKit
 
 public extension ListHeaderFooter {
-	public func createView(_ owner: NSObject) -> UIView {
+	func createView(_ owner: NSObject) -> UIView {
 		let view = self.viewConstructor()
 		
 		self.fill(self.value, view)

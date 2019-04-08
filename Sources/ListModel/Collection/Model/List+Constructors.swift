@@ -10,7 +10,7 @@ import UIKit
 
 public extension List {
 
-	public static func listFrom<V: UIView>(
+	static func listFrom<V: UIView>(
 		_ items: [T],
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (T?, V) -> Void,
@@ -38,7 +38,7 @@ public extension List {
 	}
 
 	// MARK: Item constructors
-	public static func item<V: UIView>(
+	static func item<V: UIView>(
 		nibName: String,
 		bundle: Bundle?,
 		id: String,
@@ -63,7 +63,7 @@ public extension List {
 		)
 	}
 	
-	public static func item<V: UIView>(
+	static func item<V: UIView>(
 		viewConstructor: @escaping () -> V,
 		id: String,
 		reuseId: String = String(describing: V.self),
@@ -84,7 +84,7 @@ public extension List {
 	}
 	
 	// MARK: Header constructors
-	public static func header<V: UIView>(
+	static func header<V: UIView>(
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (HeaderT?, V) -> Void,
 		id: String,
@@ -101,7 +101,7 @@ public extension List {
 	}
 	
 	// MARK: Footer constructors
-	public static func footer<V: UIView>(
+	static func footer<V: UIView>(
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (FooterT?, V) -> Void,
 		id: String,

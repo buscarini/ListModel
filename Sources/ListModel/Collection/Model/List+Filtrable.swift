@@ -9,7 +9,7 @@
 import Foundation
 
 public extension List {
-	public static func filter(_ filter: @escaping (String, T?) -> Bool) -> (List, String) -> List {
+	static func filter(_ filter: @escaping (String, T?) -> Bool) -> (List, String) -> List {
 		return { (list, string) in
 			
 			var result = list

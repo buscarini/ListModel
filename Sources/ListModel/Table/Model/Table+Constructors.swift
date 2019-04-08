@@ -10,7 +10,7 @@ import UIKit
 
 public extension Table {
 
-	public static func tableFrom<V: UIView>(
+	static func tableFrom<V: UIView>(
 		_ items: [T],
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (T?, V) -> Void,
@@ -37,7 +37,7 @@ public extension Table {
 	}
 
 	// MARK: Item constructors
-	public static func row<V: UIView>(
+	static func row<V: UIView>(
 		nibName: String,
 		bundle: Bundle?,
 		id: String,
@@ -62,7 +62,7 @@ public extension Table {
 		)
 	}
 	
-	public static func row<V: UIView>(
+	static func row<V: UIView>(
 		viewConstructor: @escaping () -> V,
 		id: String,
 		reuseId: String = String(describing: V.self),
@@ -83,7 +83,7 @@ public extension Table {
 	}
 	
 	// MARK: Header constructors
-	public static func header<V: UIView>(
+	static func header<V: UIView>(
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (HeaderT?, V) -> Void,
 		id: String,
@@ -100,7 +100,7 @@ public extension Table {
 	}
 	
 	// MARK: Footer constructors
-	public static func footer<V: UIView>(
+	static func footer<V: UIView>(
 		viewConstructor: @escaping () -> V,
 		fill: @escaping (FooterT?, V) -> Void,
 		id: String,

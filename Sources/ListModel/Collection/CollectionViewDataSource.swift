@@ -80,12 +80,20 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			
 			let visibleIndexPaths = view.indexPathsForVisibleItems
 			
-			for indexPath in visibleIndexPaths {
+			let (changedIndexPaths, _) = List.itemsChangedPaths(oldList, newList).partition { indexPath in
+				return visibleIndexPaths.contains(indexPath)
+			}
+			
+			guard changedIndexPaths.count > 0 else {
+				return
+			}
+			
+			for indexPath in changedIndexPaths {
 				guard let cell = view.cellForItem(at: indexPath) as? CollectionViewCell<T> else { continue }
 				let listItem = newList.sections[indexPath.section].items[indexPath.item]
 				
 				onWillConfigureCell?(cell, cell.view, listItem, indexPath)
-
+				
 				cell.fill(listItem)
 				
 				onDidConfigureCell?(cell, cell.view, listItem, indexPath)

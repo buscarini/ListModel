@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		AC033D1921BE97D500BC0AA5 /* ContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC033D1821BE97D500BC0AA5 /* ContainerView.swift */; };
+		AC3CAF222265BC79002A66BD /* FlowLayoutDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC3CAF212265BC79002A66BD /* FlowLayoutDelegate.swift */; };
 		AC90669C21DA1AEF00785896 /* TableRowSelectionStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC90669B21DA1AEF00785896 /* TableRowSelectionStyle.swift */; };
 		ACCD0A7E2229951300187E03 /* ScrollViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ACCD0A7D2229951300187E03 /* ScrollViewDelegate.swift */; };
 		OBJ_100 /* CollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* CollectionViewDataSource.swift */; };
@@ -114,6 +115,7 @@
 
 /* Begin PBXFileReference section */
 		AC033D1821BE97D500BC0AA5 /* ContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContainerView.swift; sourceTree = "<group>"; };
+		AC3CAF212265BC79002A66BD /* FlowLayoutDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlowLayoutDelegate.swift; sourceTree = "<group>"; };
 		AC90669B21DA1AEF00785896 /* TableRowSelectionStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableRowSelectionStyle.swift; sourceTree = "<group>"; };
 		AC90669D21DA1D5500785896 /* ListModel.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = ListModel.podspec; sourceTree = "<group>"; };
 		ACCD0A7D2229951300187E03 /* ScrollViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScrollViewDelegate.swift; sourceTree = "<group>"; };
@@ -379,6 +381,7 @@
 			children = (
 				OBJ_9 /* Alias.swift */,
 				ACCD0A7D2229951300187E03 /* ScrollViewDelegate.swift */,
+				AC3CAF212265BC79002A66BD /* FlowLayoutDelegate.swift */,
 				OBJ_10 /* Collection */,
 				OBJ_33 /* DeviceValue.swift */,
 				OBJ_34 /* EmptyType.swift */,
@@ -542,6 +545,7 @@
 				OBJ_114 /* ListItemConfiguration.swift in Sources */,
 				OBJ_115 /* ListSection.swift in Sources */,
 				OBJ_116 /* ListScrollInfo.swift in Sources */,
+				AC3CAF222265BC79002A66BD /* FlowLayoutDelegate.swift in Sources */,
 				OBJ_117 /* ListScrollPosition.swift in Sources */,
 				OBJ_118 /* DeviceValue.swift in Sources */,
 				OBJ_119 /* EmptyType.swift in Sources */,

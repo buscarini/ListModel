@@ -1,6 +1,6 @@
 import UIKit
 
-public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT: Equatable>: NSObject, UICollectionViewDataSource, UICollectionViewDelegate {
+public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT: Equatable>: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
 	public typealias List = ListModel.List<T, HeaderT, FooterT>
 	public typealias Section = List.Section
@@ -21,6 +21,7 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	public var onCellHide: CellDisplayEvent?
 	
 	public var scrollDelegate = ScrollViewDelegate()
+	public var flowLayoutDelegate = FlowLayoutDelegate()
 
 	public init(view: UICollectionView) {
 		self.view = view
@@ -306,5 +307,50 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return scrollDelegate.viewForZooming?(scrollView)
 	}
+	
+	// MARK: UICollectionViewFlowDelegate
+	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+		let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout
+		return flowLayoutDelegate.sizeForItem?(indexPath, collectionViewLayout, collectionView)
+			?? flowLayout?.itemSize
+			?? UICollectionViewFlowLayout.automaticSize
+	}
+	
+	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+		let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout
+		return flowLayoutDelegate.sectionInset?(section, collectionViewLayout, collectionView)
+			?? flowLayout?.sectionInset
+			?? .zero
+	}
+	
+	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+		let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout
+		return flowLayoutDelegate.minSectionLineSpacing?(section, collectionViewLayout, collectionView)
+			?? flowLayout?.minimumLineSpacing
+			?? 0
+	}
+	
+	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+		let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout
+		return flowLayoutDelegate.minSectionItemSpacing?(section, collectionViewLayout, collectionView)
+			?? flowLayout?.minimumInteritemSpacing
+			?? 0
+	}
+	
+	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+		let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout
+		return flowLayoutDelegate.headerReferenceSize?(section, collectionViewLayout, collectionView)
+			?? flowLayout?.headerReferenceSize
+			?? UICollectionViewFlowLayout.automaticSize
+	}
+	
+	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+		let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout
+		return flowLayoutDelegate.footerReferenceSize?(section, collectionViewLayout, collectionView)
+			?? flowLayout?.footerReferenceSize
+			?? UICollectionViewFlowLayout.automaticSize
+	}
+
+	
 }
 

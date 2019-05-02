@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import DifferenceKit
 
 public struct TableSection<T: Equatable, HeaderT: Equatable, FooterT: Equatable> : Equatable {
 	public var rows: [TableRow<T>]
@@ -25,4 +26,40 @@ public func ==<T, HeaderT, FooterT>(lhs : TableSection<T, HeaderT, FooterT>, rhs
 	guard lhs.footer == rhs.footer else { return false }
 	return true
 }
+//
+//extension TableSection: Differentiable {
+//	public var differenceIdentifier: String {
+//		return id
+//	}
+//}
+//
+//extension TableSection: DifferentiableSection {
+//	public init<C>(source: TableSection<T, HeaderT, FooterT>, elements: C) where C: Collection, C.Element == TableRow<T> {
+//		self.init(rows: elements)
+//	}
+//	
+//	@inlinable
+//	public var differenceIdentifier: TableRow<T>.DifferenceIdentifier {
+//		return model.differenceIdentifier
+//	}
+//	
+//	public var elements: [TableRow<T>] {
+//		return rows
+//	}	
+//}
 
+public struct TableSectionDiffModel<HeaderT: Equatable, FooterT: Equatable>: Equatable, Differentiable {
+	public var index: Int
+	public var header: TableHeaderFooter<HeaderT>?
+	public var footer: TableHeaderFooter<FooterT>?
+	
+	init(_ index: Int, header: TableHeaderFooter<HeaderT>?, footer: TableHeaderFooter<FooterT>?) {
+		self.index = index
+		self.header = header
+		self.footer = footer
+	}
+	
+	public var differenceIdentifier: Int {
+		return index
+	}
+}

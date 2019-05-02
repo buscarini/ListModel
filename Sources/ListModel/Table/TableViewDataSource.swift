@@ -1,4 +1,5 @@
 import UIKit
+import DifferenceKit
 
 public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equatable> : NSObject, UITableViewDataSource, UITableViewDelegate, UITableViewDataSourcePrefetching
 	{
@@ -177,64 +178,89 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	
 		let visibleIndexPaths = self.view.indexPathsForVisibleRows
 		
-		guard self.needsUpdate == false else {
+		guard self.needsUpdate == false, let oldTable = oldTable, let newTable = newTable else {
 			self.view.reloadData()
 			completion?()
 			return
 		}
 	
-		self.updateQueue.async {
-			if let oldTable = oldTable, let newTable = newTable, Table.sameItemsCount(oldTable, newTable) {
-				let (changedIndexPaths, notVisibleIndexPaths) = Table.itemsChangedPaths(oldTable, newTable).partition {
-					indexPath in
-					return visibleIndexPaths?.contains(indexPath) ?? true
-				}
-				
-				for indexPath in notVisibleIndexPaths {
-					self.heights.removeValue(forKey: indexPath)
-				}
-				
-				DispatchQueue.main.async {
-					defer { completion?() }
-
-					if changedIndexPaths.count>0 {
-						self.heights = TableViewDataSource.updateIndexPathsWithFill(newTable, view: self.view, indexPaths: changedIndexPaths, cellHeights: self.heights)
-
-						if let currentTable = self.table, currentTable == newTable, !Table.headersChanged(oldTable, newTable) {
-							if #available(iOS 10.0, *) {
-								self.view.beginUpdates()
-								// Needed for accessory changes?? -> problem is it stops editing textfields, for example
-								// seems to be here for accessory changes, but maybe it's not needed??
-//								self.view.reloadRows(at: changedIndexPaths, with: .none)
-								self.view.endUpdates()
-							}
-							else {
-								self.view.reloadData()
-							}
-						}
-						else {
-							// If we are changing the table too quickly, we may get here. We shouldn't reload the table, because if we are editing a text field inside a cell, for example, we would stop editing.
-							// Can this cause problems?
-//							self.view.reloadData()
-						}
-					
-					}
-					else if Table.headersChanged(oldTable, newTable) {
-						self.view.reloadData()
-					}
-					else {
-						// NO CHANGES
-					}
-				}
-			}
-			else {
-				DispatchQueue.main.async {
-					self.view.reloadData()
-					self.heights.removeAll()
-					completion?()
-				}
-			}
+		let oldSections = zip(oldTable.sections, 1...).map { section, index in
+			ArraySection(model: TableSectionDiffModel.init(index, header: section.header, footer: section.footer), elements: section.rows)
 		}
+		
+		let newSections = zip(newTable.sections, 1...).map { section, index in
+			ArraySection(model: TableSectionDiffModel.init(index, header: section.header, footer: section.footer), elements: section.rows)
+		}
+		
+		let changeset = StagedChangeset.init(source: oldSections, target: newSections)
+		self.view.reload(using: changeset, with: .fade) { data in
+			completion?()
+		}
+		
+//
+//		self.updateQueue.async {
+//
+//
+//			DispatchQueue.main.async {
+//
+//			}
+//
+//
+////			StagedChangeset(source: oldTable?.sections)
+//
+//
+//
+//			if let oldTable = oldTable, let newTable = newTable, Table.sameItemsCount(oldTable, newTable) {
+//				let (changedIndexPaths, notVisibleIndexPaths) = Table.itemsChangedPaths(oldTable, newTable).partition {
+//					indexPath in
+//					return visibleIndexPaths?.contains(indexPath) ?? true
+//				}
+//
+//				for indexPath in notVisibleIndexPaths {
+//					self.heights.removeValue(forKey: indexPath)
+//				}
+//
+//				DispatchQueue.main.async {
+//					defer { completion?() }
+//
+//					if changedIndexPaths.count>0 {
+//						self.heights = TableViewDataSource.updateIndexPathsWithFill(newTable, view: self.view, indexPaths: changedIndexPaths, cellHeights: self.heights)
+//
+//						if let currentTable = self.table, currentTable == newTable, !Table.headersChanged(oldTable, newTable) {
+//							if #available(iOS 10.0, *) {
+//								self.view.beginUpdates()
+//								// Needed for accessory changes?? -> problem is it stops editing textfields, for example
+//								// seems to be here for accessory changes, but maybe it's not needed??
+////								self.view.reloadRows(at: changedIndexPaths, with: .none)
+//								self.view.endUpdates()
+//							}
+//							else {
+//								self.view.reloadData()
+//							}
+//						}
+//						else {
+//							// If we are changing the table too quickly, we may get here. We shouldn't reload the table, because if we are editing a text field inside a cell, for example, we would stop editing.
+//							// Can this cause problems?
+////							self.view.reloadData()
+//						}
+//
+//					}
+//					else if Table.headersChanged(oldTable, newTable) {
+//						self.view.reloadData()
+//					}
+//					else {
+//						// NO CHANGES
+//					}
+//				}
+//			}
+//			else {
+//				DispatchQueue.main.async {
+//					self.view.reloadData()
+//					self.heights.removeAll()
+//					completion?()
+//				}
+//			}
+//		}
 	}
 	
 	fileprivate func tableHeaderView(_ newTable: Table?) -> UIView? {

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import DifferenceKit
 
 public struct TableRow<T: Equatable>: Equatable {
 	
@@ -75,4 +76,10 @@ public func ==<T>(lhs : TableRow<T>, rhs: TableRow<T>) -> Bool {
 	guard (lhs.onSelect == nil && rhs.onSelect == nil) || (lhs.onSelect != nil && rhs.onSelect != nil) else { return false }
 
 	return true
+}
+
+extension TableRow: Differentiable {
+	public var differenceIdentifier: String {
+		return id
+	}
 }

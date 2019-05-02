@@ -1,6 +1,6 @@
 import UIKit
 
-public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equatable> : NSObject, UITableViewDataSource, UITableViewDelegate
+public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equatable> : NSObject, UITableViewDataSource, UITableViewDelegate, UITableViewDataSourcePrefetching
 	{
 	
 	public typealias Table = ListModel.Table<T,HeaderT, FooterT>
@@ -27,6 +27,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	public var onCellHide: CellDisplayEvent?
 	
 	public var scrollDelegate = ScrollViewDelegate()
+	public var prefetching = TableDataPrefetching()
 	
 	private var needsUpdate = false
 	
@@ -53,6 +54,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			
 		self.view.dataSource = self
 		self.view.delegate = self
+		self.view.prefetchDataSource = self
 			
 		self.view.rowHeight = UITableView.automaticDimension
 		self.view.estimatedRowHeight = 44
@@ -532,6 +534,15 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		guard Table.sectionInsideBounds(table, section: section) else { return nil }
 
 		return table.sections[section].footer?.createView(self)
+	}
+	
+	// MARK: UITableViewDataPrefetching
+	public func tableView(_ tableView: UITableView, prefetchRowsAt indexPaths: [IndexPath]) {
+		self.prefetching.prefetchRows(tableView, indexPaths)
+	}
+	
+	public func tableView(_ tableView: UITableView, cancelPrefetchingForRowsAt indexPaths: [IndexPath]) {
+		self.prefetching.cancelPrefetching(tableView, indexPaths)
 	}
 	
 	// MARK: UITableViewDelegate

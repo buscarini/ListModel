@@ -93,8 +93,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	public var table: Table? {
 		set {
 			let oldValue = _table
-			_table = newValue
-			TableViewDataSource.registerViews(newValue,tableView: self.view)
+			TableViewDataSource.registerViews(newValue, tableView: self.view)
 
 //			layoutView()
 //			guard self.view.bounds.size.width > 0 else {
@@ -102,7 +101,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 //				return
 //			}
 			
-			self.update(oldValue, newTable: newValue, completion: {})
+			self.update(oldValue, newTable: newValue, completion: {
+				self._table = newValue
+			})
 		}
 		
 		get {

@@ -95,6 +95,13 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			let oldValue = _table
 			TableViewDataSource.registerViews(newValue, tableView: self.view)
 
+			
+			guard oldValue != nil else {
+				self._table = newValue
+				self.view.reloadData()
+				return
+			}
+			
 //			layoutView()
 //			guard self.view.bounds.size.width > 0 else {
 //				self.needsUpdate = true
@@ -151,18 +158,18 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			UIView.performWithoutAnimation {
 				self.view.layoutIfNeeded()
 			}
-			
+
 			self.updateHeaderFooter(newTable, oldTable: oldTable)
-			
-			
+
+
 			self.updateScroll(newTable)
 			self.updatePullToRefresh(oldTable, newTable: newTable)
-			
-			
+
+
 			self.contentSizeChanged?(self.view.contentSize)
-			
+
 			self.needsUpdate = false
-			
+
 			UIView.performWithoutAnimation {
 				self.view.tableHeaderView?.layoutIfNeeded()
 				self.view.tableHeaderView = self.view.tableHeaderView

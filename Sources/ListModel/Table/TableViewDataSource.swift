@@ -650,8 +650,15 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	open func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
-		guard let row = self.table?.sections[indexPath.section].rows[indexPath.row] else { return []
+		
+		guard
+			let table = self.table,
+			Table.indexPathInsideBounds(table, indexPath: indexPath)
+		else {
+			return []
 		}
+		
+		let row = table.sections[indexPath.section].rows[indexPath.row]
 		
 		let configuration = row.configuration
 		

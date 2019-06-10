@@ -27,6 +27,7 @@ extension CollectionViewCell {
 			self.contentView.addSubview(subview)
 			subview.translatesAutoresizingMaskIntoConstraints = false
 			LayoutUtils.fill(self.contentView,view: subview)
+			self.reuseId = listItem.reuseId
 		}
 		
 		

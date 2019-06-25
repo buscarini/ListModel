@@ -57,12 +57,12 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		self.view.prefetchDataSource = self
 			
 		self.view.rowHeight = UITableView.automaticDimension
-		self.view.estimatedRowHeight = 44
+//		self.view.estimatedRowHeight = 44
 		
 		self.view.sectionHeaderHeight = UITableView.automaticDimension
-		self.view.estimatedSectionHeaderHeight = 44
+//		self.view.estimatedSectionHeaderHeight = 44
 		self.view.sectionFooterHeight = UITableView.automaticDimension
-		self.view.estimatedSectionFooterHeight = 44
+//		self.view.estimatedSectionFooterHeight = 44
 		
 		self.setDefaultHeaderFooter()
 	}

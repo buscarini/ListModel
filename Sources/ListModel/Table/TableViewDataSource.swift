@@ -124,6 +124,22 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		self.update(oldValue, newTable: table, completion: completion)
 	}
 	
+	public func reloadVisible(completion: @escaping () -> Void) {
+		guard let table = self.table else {
+			completion()
+			return
+		}
+		
+		let paths = self.view.indexPathsForVisibleRows ?? []
+
+		self.heights = TableViewDataSource.updateIndexPathsWithFill(table, view: self.view, indexPaths: paths, cellHeights: self.heights)
+		
+		self.view.beginUpdates()
+		self.view.endUpdates()
+		
+		completion()
+	}
+	
 	public func startRefreshing() { self.isRefreshing = true }
 	public func endRefreshing() { self.isRefreshing = false }
 	

@@ -200,6 +200,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		}
 	
 		self.updateQueue.async {
+			print("old \(oldTable)")
+			print("new \(newTable)")
+			
 			if let oldTable = oldTable, let newTable = newTable, Table.sameItemsCount(oldTable, newTable) {
 				let (changedIndexPaths, notVisibleIndexPaths) = Table.itemsChangedPaths(oldTable, newTable).partition {
 					indexPath in
@@ -254,22 +257,12 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	fileprivate func tableHeaderView(_ newTable: Table?) -> UIView? {
-		let headerContainer = UIView()
-		headerContainer.translatesAutoresizingMaskIntoConstraints = false
-		
-		
-		
 		if let headerView = newTable?.header?.createView(self) {
 			headerView.translatesAutoresizingMaskIntoConstraints = false
-			headerContainer.addSubview(headerView)
 			return headerView
 		}
 		
 		return nil
-		
-//		_ = headerView.map { self.layout(view: $0, inWidth: self.view.bounds.size.width) }
-		
-//		return headerView
 	}
 	
 	fileprivate func tableFooterView(_ newTable: Table?) -> UIView? {
@@ -296,11 +289,12 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			TableViewDataSource.hasChanged(oldTable?.configuration, newTable?.configuration) {
 			
 			addTableHeader(newTable, oldTable: oldTable)
+			
 			NSLayoutConstraint.activate([
 				self.view.tableHeaderView?.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
 				self.view.tableHeaderView?.widthAnchor.constraint(equalTo: self.view.widthAnchor),
 				self.view.tableHeaderView?.topAnchor.constraint(equalTo: self.view.topAnchor)
-				].compactMap { $0 })
+			].compactMap { $0 })
 			
 			self.view.tableHeaderView?.layoutIfNeeded()
 			self.view.tableHeaderView = self.view.tableHeaderView

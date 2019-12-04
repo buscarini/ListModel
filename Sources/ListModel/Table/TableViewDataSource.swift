@@ -200,9 +200,6 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		}
 	
 		self.updateQueue.async {
-			print("old \(oldTable)")
-			print("new \(newTable)")
-			
 			if let oldTable = oldTable, let newTable = newTable, Table.sameItemsCount(oldTable, newTable) {
 				let (changedIndexPaths, notVisibleIndexPaths) = Table.itemsChangedPaths(oldTable, newTable).partition {
 					indexPath in

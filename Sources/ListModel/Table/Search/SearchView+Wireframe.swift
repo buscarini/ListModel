@@ -45,7 +45,7 @@ extension SearchView {
     }
 
 	public func close() {
-		guard (self.navigationController?.viewControllers.index(of: self) ?? -1) > 0 else {
+		guard (self.navigationController?.viewControllers.firstIndex(of: self) ?? -1) > 0 else {
 			self.navigationController?.dismiss(animated: true, completion: nil)
 			return
 		}

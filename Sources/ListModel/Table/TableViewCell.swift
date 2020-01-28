@@ -1,20 +1,5 @@
 import UIKit
 
-extension UITableViewCell.SelectionStyle {
-	public var string: String {
-		switch self {
-		case .none:
-			return "none"
-		case .blue:
-			return "blue"
-		case .default:
-			return "default"
-		case .gray:
-			return "gray"
-		}
-	}
-}
-
 open class TableViewCell<T : Equatable> : UITableViewCell {
 	public var view: UIView?
 	var reuseId: String?

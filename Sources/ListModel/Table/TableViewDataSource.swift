@@ -109,7 +109,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 //			}
 			
 			self.update(oldValue, newTable: newValue, completion: {
-				self._table = newValue
+//				self._table = newValue
 			})
 		}
 		
@@ -158,13 +158,13 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			UIView.performWithoutAnimation {
 				self.view.layoutIfNeeded()
 			}
+			
+			self._table = newTable
 
 			self.updateHeaderFooter(newTable, oldTable: oldTable)
 
-
 			self.updateScroll(newTable)
 			self.updatePullToRefresh(oldTable, newTable: newTable)
-
 
 			self.contentSizeChanged?(self.view.contentSize)
 

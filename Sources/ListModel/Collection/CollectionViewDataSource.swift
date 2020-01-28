@@ -117,7 +117,7 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			scrollDirection = .vertical
 		}
 		
-		switch (position,scrollDirection) {
+		switch (position, scrollDirection) {
 			case (.start,.horizontal):
 				return .left
 			case (.start,.vertical):
@@ -130,6 +130,8 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 				return .bottom
 			case (.end, .horizontal):
 					return .right
+			@unknown default:
+				return .left
 		}
 	}
 	

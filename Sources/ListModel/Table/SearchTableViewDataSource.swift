@@ -43,8 +43,6 @@ public class SearchTableViewDataSource<T: Equatable, HeaderT: Equatable, FooterT
 		}
 	}
 	
-	
-	
 	public required init(view: UITableView, filter: @escaping Filter) {
 		self.dataSource = DataSourceType(view: view)
 		self.searchController = UISearchController(searchResultsController: nil)
@@ -79,9 +77,7 @@ public class SearchTableViewDataSource<T: Equatable, HeaderT: Equatable, FooterT
 			reuseId: "search",
 			value: nil
 		)
-		
-//		appliedList?.header = Table.header(view: searchController.searchBar, value: nil, unwrapValue: { _ in searchString })
-		
+				
 		let config = appliedList?.configuration
 		appliedList?.configuration = searching ? nil : config
 		

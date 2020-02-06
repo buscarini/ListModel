@@ -129,7 +129,9 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			case (.end, .vertical):
 				return .bottom
 			case (.end, .horizontal):
-					return .right
+				return .right
+			@unknown default:
+				return .left
 		}
 	}
 	
@@ -174,11 +176,13 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	}
 
 	public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-		guard let list = self.list else {
-			fatalError("List is required. We shouldn't be here")
+		guard
+			let list = self.list,
+			let listItem = List.itemAt(list, indexPath: indexPath)
+		else {
+			print("List is required. We shouldn't be here")
+			return UICollectionViewCell()
 		}
-		
-		let listItem = List.itemAt(list, indexPath: indexPath)!
 
 		let cell = collectionView.dequeueReusableCell(withReuseIdentifier: listItem.reuseId, for: indexPath)
 		let fillCell = cell as! CollectionViewCell<T>
@@ -196,8 +200,13 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	public func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 		let section = indexPath.section
 		
-		guard let list = self.list else { fatalError("No list") }
-		guard List.sectionInsideBounds(list, section: section) else { fatalError("Section outside bounds") }
+		guard
+			let list = self.list,
+			List.sectionInsideBounds(list, section: section)
+		else {
+			print("Invalid situation. Something bad happened")
+			return UICollectionReusableView()
+		}
 		
 		let view: UICollectionReusableView
 		switch kind {
@@ -218,7 +227,9 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 				cell.fill(footer)
 			
 			default:
-				fatalError("Unsupported supplementary view kind")
+				print("Unsupported supplementary view kind")
+				return UICollectionReusableView()
+
 		}
 		
 		return view

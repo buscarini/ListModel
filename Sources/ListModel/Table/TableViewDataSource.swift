@@ -494,14 +494,14 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-		guard let table = self.table else {
-			fatalError("Table is required. We shouldn't be here")
+		guard
+			let table = self.table,
+			let row = Table.rowAt(table, indexPath: indexPath)
+		else {
+			print("Invalid situation. Something bad happened")
+			return UITableViewCell()
 		}
 
-		guard let row = Table.rowAt(table, indexPath: indexPath) else {
-			fatalError("Index out of bounds. This shouldn't happen")
-		}
-		
 		let reusableId = row.reuseId
 		let cell = tableView.dequeueReusableCell(withIdentifier: reusableId, for: indexPath)
 		

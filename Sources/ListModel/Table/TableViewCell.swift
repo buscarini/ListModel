@@ -11,6 +11,8 @@ extension UITableViewCell.SelectionStyle {
 			return "default"
 		case .gray:
 			return "gray"
+		@unknown default:
+			return "gray"
 		}
 	}
 }

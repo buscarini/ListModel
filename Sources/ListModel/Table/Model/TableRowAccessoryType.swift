@@ -33,8 +33,8 @@ public func ==(left: TableRowAccessoryType, right: TableRowAccessoryType) -> Boo
 			(.detailButton, .detailButton):
 			return true
 		
-		case (.view(let f1), .view(let f2)):
-			// TODO: Check if this can be done
+		case (.view, .view):
+			// TODO: See how to solve this case
 			return true // f1() == f2()
 		
 		default:

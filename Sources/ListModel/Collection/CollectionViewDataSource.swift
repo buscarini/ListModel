@@ -48,34 +48,59 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 		self.view.delegate = self			
 	}
 	
+	private var _list: List?
+
 	public var list: List? {
-		didSet {
+		get {
+			return _list
+		}
+		
+		set {
+			let oldValue = _list
+			_list = newValue
 			CollectionViewDataSource.registerViews(self.list, collectionView: self.view)
-			self.update(oldValue, newList: list)
+			self.update(oldValue, newList: list, completion: {})
 		}
 	}
 	
-	fileprivate func update(_ oldList: List?, newList: List?) {
-		self.updateView(oldList, newList: newList)
+	public func update(list: List?, completion: @escaping () -> Void) {
+			let oldValue = _list
+			_list = list
 		
+			CollectionViewDataSource.registerViews(self.list, collectionView: self.view)
+			self.update(oldValue, newList: list, completion: {})
+		}
+	
+	fileprivate func update(
+		_ oldList: List?,
+		newList: List?,
+		completion: @escaping () -> Void
+	) {
+		self.updateView(oldList, newList: newList) {
+			self.refreshControl?.endRefreshing()
+			if let refreshControl = self.refreshControl , newList?.configuration?.onRefresh != nil {
+				self.view.addSubview(refreshControl)
+				self.view.alwaysBounceVertical = true
+			}
+			else {
+				self.refreshControl?.removeFromSuperview()
+			}
 			
-		self.refreshControl?.endRefreshing()
-		if let refreshControl = self.refreshControl , newList?.configuration?.onRefresh != nil {
-			self.view.addSubview(refreshControl)
-			self.view.alwaysBounceVertical = true
+			if let list = newList, let scrollInfo = self.list?.scrollInfo, let indexPath = scrollInfo.indexPath, List.indexPathInsideBounds(list, indexPath: indexPath) {
+				self.view.scrollToItem(at: indexPath as IndexPath, at:  CollectionViewDataSource.scrollPositionWithPosition(scrollInfo.position, collectionView: self.view), animated: scrollInfo.animated)
+			}
+			
+			self.contentSizeChanged?(self.view.contentSize)
+			
+			completion()
 		}
-		else {
-			self.refreshControl?.removeFromSuperview()
-		}
-		
-		if let list = newList, let scrollInfo = self.list?.scrollInfo, let indexPath = scrollInfo.indexPath, List.indexPathInsideBounds(list, indexPath: indexPath) {
-			self.view.scrollToItem(at: indexPath as IndexPath, at:  CollectionViewDataSource.scrollPositionWithPosition(scrollInfo.position, collectionView: self.view), animated: scrollInfo.animated)
-		}
-		
-		self.contentSizeChanged?(self.view.contentSize)
 	}
 	
-	fileprivate func updateView(_ oldList: List?, newList: List?) {
+	fileprivate func updateView(
+		_ oldList: List?,
+		newList: List?,
+		completion: @escaping () -> Void
+	) {
 		if	let oldList = oldList, let newList = newList, List.sameItemsCount(oldList, newList), !List.headersChanged(oldList, newList) {
 			
 			let visibleIndexPaths = view.indexPathsForVisibleItems
@@ -98,9 +123,12 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 				
 				onDidConfigureCell?(cell, cell.view, listItem, indexPath)
 			}
+			
+			completion()
 		}
 		else {
 			self.view.reloadData()
+			completion()
 		}
 	}
 	

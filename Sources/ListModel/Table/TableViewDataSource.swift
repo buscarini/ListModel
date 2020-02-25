@@ -94,12 +94,6 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			let oldValue = _table
 			_table = newValue
 			TableViewDataSource.registerViews(newValue,tableView: self.view)
-
-//			layoutView()
-//			guard self.view.bounds.size.width > 0 else {
-//				self.needsUpdate = true
-//				return
-//			}
 			
 			self.update(oldValue, newTable: newValue, completion: {})
 		}

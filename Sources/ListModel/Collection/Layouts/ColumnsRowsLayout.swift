@@ -65,8 +65,8 @@ open class ColumnsRowsLayout: UICollectionViewFlowLayout {
 		let width = itemLength(viewSize.width, numItems: columns, totalOuterMargin: outerMarginH, innerMargin: self.minimumInteritemSpacing)
 		let height = itemLength(viewSize.height, numItems: rows, totalOuterMargin: outerMarginV, innerMargin: self.minimumLineSpacing)
 		
-		return CGSize(width: width, height: height)
-	
+		return CGSize(width: max(0, width), height: max(0, height))
+
 	}
 	
 	fileprivate func itemLength(_ viewLength: CGFloat, numItems: CGFloat, totalOuterMargin: CGFloat, innerMargin: CGFloat) -> CGFloat {

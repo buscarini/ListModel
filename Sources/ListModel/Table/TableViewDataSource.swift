@@ -624,7 +624,10 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 		// TODO: Move this to a different place
 		
-		guard let table = self.table else {
+		guard
+			let table = self.table,
+			Table.indexPathInsideBounds(table, indexPath: indexPath)
+		else {
 			return
 		}
 		
@@ -640,7 +643,10 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	open func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-		guard let table = self.table else {
+		guard
+			let table = self.table,
+			Table.indexPathInsideBounds(table, indexPath: indexPath)
+		else {
 			return
 		}
 		

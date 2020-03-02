@@ -196,7 +196,10 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	}
 	
 	public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		guard let list = self.list else {
+		guard
+			let list = self.list,
+			list.sections.count > section
+		else {
 			return 0
 		}
 		
@@ -265,7 +268,10 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	
 	// MARK : UICollectionViewDelegate
 	public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-		guard let list = self.list else {
+		guard
+			let list = self.list,
+			List.indexPathInsideBounds(list, indexPath: indexPath)
+		else {
 			return
 		}
 		

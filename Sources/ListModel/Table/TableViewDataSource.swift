@@ -480,7 +480,10 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-		guard let table = self.table else {
+		guard
+			let table = self.table,
+			table.sections.count > section
+		else {
 			return 0
 		}
 		

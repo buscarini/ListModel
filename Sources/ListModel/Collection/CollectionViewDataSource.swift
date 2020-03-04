@@ -96,12 +96,26 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 		}
 	}
 	
+	fileprivate static func headersChanged(_ oldList: List?, _ newList: List?) -> Bool {
+		guard let oldList = oldList, let newList = newList else {
+			return false
+		}
+		
+		return List.headersChanged(oldList, newList)
+	}
+	
 	fileprivate func updateView(
 		_ oldList: List?,
 		newList: List?,
 		completion: @escaping () -> Void
 	) {
-		if	let oldList = oldList, let newList = newList, List.sameItemsCount(oldList, newList), !List.headersChanged(oldList, newList) {
+		guard Self.headersChanged(oldList, newList) == false else {
+			self.view.reloadData()
+			completion()
+			return
+		}
+		
+		if	let oldList = oldList, let newList = newList, List.sameItemsCount(oldList, newList) {
 			
 			let visibleIndexPaths = view.indexPathsForVisibleItems
 			

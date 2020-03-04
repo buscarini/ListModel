@@ -93,6 +93,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		set {
 			let oldValue = _table
 			_table = newValue
+			
 			TableViewDataSource.registerViews(newValue,tableView: self.view)
 			
 			self.update(oldValue, newTable: newValue, completion: {})
@@ -103,7 +104,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		}
 	}
 	
-	public func update(table: Table?, completion: @escaping () -> Void) {		
+	public func update(table: Table?, completion: @escaping () -> Void) {
 		let oldValue = _table
 		_table = table
 		TableViewDataSource.registerViews(table,tableView: self.view)
@@ -182,6 +183,14 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		}
 	}
 	
+	fileprivate static func headersChanged(_ oldTable: Table?, _ newTable: Table?) -> Bool {
+		guard let oldTable = oldTable, let newTable = newTable else {
+			return false
+		}
+		
+		return Table.headersChanged(oldTable, newTable)
+	}
+	
 	fileprivate func updateSections(_ oldTable: Table?, newTable: Table?, completion: (() -> ())?) {
 		view.rowHeight = UITableView.automaticDimension
 	
@@ -194,6 +203,14 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		}
 	
 		self.updateQueue.async {
+			guard Self.headersChanged(oldTable, newTable) == false else {
+				DispatchQueue.main.async {
+					self.view.reloadData()
+					completion?()
+				}
+				return
+			}
+			
 			if let oldTable = oldTable, let newTable = newTable, Table.sameItemsCount(oldTable, newTable) {
 				let (changedIndexPaths, notVisibleIndexPaths) = Table.itemsChangedPaths(oldTable, newTable).partition {
 					indexPath in
@@ -210,7 +227,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 					if changedIndexPaths.count>0 {
 						self.heights = TableViewDataSource.updateIndexPathsWithFill(newTable, view: self.view, indexPaths: changedIndexPaths, cellHeights: self.heights)
 
-						if let currentTable = self.table, currentTable == newTable, !Table.headersChanged(oldTable, newTable) {
+						if
+							let currentTable = self.table,
+							currentTable == newTable {
 							if #available(iOS 10.0, *) {
 								self.view.beginUpdates()
 								// Needed for accessory changes?? -> problem is it stops editing textfields, for example
@@ -228,9 +247,6 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 //							self.view.reloadData()
 						}
 					
-					}
-					else if Table.headersChanged(oldTable, newTable) {
-						self.view.reloadData()
 					}
 					else {
 						// NO CHANGES

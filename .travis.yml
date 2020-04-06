@@ -5,7 +5,16 @@ osx_image: xcode11.3
 install: swift package update
 script:
   - swift build
-  - swift test
+stages:
+	
+jobs:
+    - &test
+         stage: test
+         xcode_scheme: ListModel-Package
+         xcode_project: ListModel.xcodeproj
+         xcode_destination: 'platform=iOS Simulator,OS=13.3,name=iPhone SE'
+    - <<: *test
+         xcode_destination: 'platform=tvOS Simulator,OS=12.2,name=Apple TV'
 notifications:
   email:
     on_success: never

@@ -109,11 +109,11 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		let oldValue = self.table
 		tableQueue.async {
 			self._table = table
-		}
-		
-		DispatchQueue.main.async {
-			TableViewDataSource.registerViews(table,tableView: self.view)
-			self.update(oldValue, newTable: table, completion: completion)
+			
+			DispatchQueue.main.async {
+				TableViewDataSource.registerViews(table,tableView: self.view)
+				self.update(oldValue, newTable: table, completion: completion)
+			}
 		}
 	}
 	

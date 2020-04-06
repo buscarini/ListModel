@@ -24,6 +24,28 @@ class ConcurrencyTests: XCTestCase {
 			value: value
 		)
 	}
+	
+	func testInit() {
+		let view = UITableView(frame: .init(origin: .zero, size: .init(width: 300, height: 300)))
+
+		let dataSource = DataSource(view: view)
+		
+		let numRows = Array(0...5000).randomElement()!
+		let rows = (0...numRows).map { _ in
+			ConcurrencyTests.row(arc4random())
+		
+		}
+
+		dataSource.table = Table(sections: [
+			Table.Section.init(rows: rows)
+		])
+		
+		let vc = UIViewController()
+		let win = UIWindow.init(frame: UIScreen.main.bounds)
+		win.rootViewController = vc
+		vc.view.addSubview(view)		
+	}
+	
 	func testConcurrent() {
 		let count = 500
 		
@@ -45,10 +67,12 @@ class ConcurrencyTests: XCTestCase {
 					ConcurrencyTests.row(arc4random())
 				}
 				
-				dataSource.update(table: Table(sections: [
-					Table.Section.init(rows: rows)
-				])) {
-					finish.fulfill()
+				DispatchQueue.main.async {
+					dataSource.update(table: Table(sections: [
+						Table.Section.init(rows: rows)
+					])) {
+						finish.fulfill()
+					}
 				}
 			}
 		}

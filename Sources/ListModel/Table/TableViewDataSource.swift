@@ -12,6 +12,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 
 	fileprivate var estimatedHeights: [IndexPath: CGFloat] = [:]
 	fileprivate var heights: [IndexPath: CGFloat] = [:]
+	fileprivate var registeredIds: [String] = []
 	
 	fileprivate var refreshControl: UIRefreshControl?
 	
@@ -51,7 +52,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	fileprivate func viewChanged() {
-		TableViewDataSource.registerViews(self.table,tableView: self.view)
+		self.registeredIds.removeAll()
+		
+		self.registerViews(self.table)
 			
 		self.view.dataSource = self
 		self.view.delegate = self
@@ -105,16 +108,13 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	public func update(table: Table?, completion: @escaping () -> Void) {
-		
 		let oldValue = self.table
 		tableQueue.async {
 			self._table = table
-			
-			DispatchQueue.main.async {
-				TableViewDataSource.registerViews(table,tableView: self.view)
-				self.update(oldValue, newTable: table, completion: completion)
-			}
 		}
+		
+		self.registerViews(table)
+		self.update(oldValue, newTable: table, completion: completion)
 	}
 	
 	public func reloadVisible(completion: @escaping () -> Void) {
@@ -476,14 +476,21 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		}
 	}
 	
-	public static func registerViews(_ table: Table?, tableView : UITableView?) {
-		guard let table = table else { return }
-		guard let tableView = tableView else { return }
+	public func registerViews(_ table: Table?) {
+		self.registeredIds.append(contentsOf:
+			Self.registerViews(table, tableView: self.view)
+		)
+	}
+	
+	public static func registerViews(_ table: Table?, tableView : UITableView?) -> [String] {
+		guard let table = table else { return [] }
+		guard let tableView = tableView else { return [] }
 		
 		let allReusableIds = Table.allReusableIds(table)
 		for reusableId in allReusableIds {
 			tableView.register(TableViewCell<T>.self, forCellReuseIdentifier: reusableId)
 		}
+		return allReusableIds
 	}
 	
 	// MARK: Pull to Refresh
@@ -515,11 +522,17 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			let table = self.table,
 			let row = Table.rowAt(table, indexPath: indexPath)
 		else {
-			print("Invalid situation. Something bad happened")
+			debugPrint("Row is missing. This could happen when updating the model simultaneously from multiple threads.")
 			return UITableViewCell()
 		}
 
 		let reusableId = row.reuseId
+		
+		guard self.registeredIds.contains(reusableId) else {
+			debugPrint("Not registered yet")
+			return UITableViewCell()
+		}
+		
 		let cell = tableView.dequeueReusableCell(withIdentifier: reusableId, for: indexPath)
 		
 		self.configureCell(cell, row: row, indexPath: indexPath)

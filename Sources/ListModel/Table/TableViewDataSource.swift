@@ -15,6 +15,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	
 	fileprivate var refreshControl: UIRefreshControl?
 	
+	fileprivate lazy var tableQueue: DispatchQueue = DispatchQueue(label: "TableViewDataSource table queue", attributes: [])
 	fileprivate lazy var updateQueue: DispatchQueue = DispatchQueue(label: "TableViewDataSource update queue", attributes: [])
 
 	public typealias SizeChanged = (CGSize) -> ()
@@ -91,32 +92,29 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	
 	public var table: Table? {
 		set {
-			let oldValue = _table
-			_table = newValue
-			
-			TableViewDataSource.registerViews(newValue,tableView: self.view)
-			
-			self.update(oldValue, newTable: newValue, completion: {})
+			self.update(table: newValue, completion: {})
 		}
 		
 		get {
-			return _table
+			var result: Table?
+			tableQueue.sync {
+				result = _table
+			}
+			return result
 		}
 	}
 	
 	public func update(table: Table?, completion: @escaping () -> Void) {
-		let oldValue = _table
-		_table = table
-		TableViewDataSource.registerViews(table,tableView: self.view)
 		
-//		layoutView()
-
-//		guard self.view.bounds.size.width > 0 else {
-//			self.needsUpdate = true
-//			return
-//		}
+		let oldValue = self.table
+		tableQueue.async {
+			self._table = table
+		}
 		
-		self.update(oldValue, newTable: table, completion: completion)
+		DispatchQueue.main.async {
+			TableViewDataSource.registerViews(table,tableView: self.view)
+			self.update(oldValue, newTable: table, completion: completion)
+		}
 	}
 	
 	public func reloadVisible(completion: @escaping () -> Void) {
@@ -125,14 +123,16 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			return
 		}
 		
-		let paths = self.view.indexPathsForVisibleRows ?? []
+		DispatchQueue.main.async {
+			let paths = self.view.indexPathsForVisibleRows ?? []
 
-		self.heights = TableViewDataSource.updateIndexPathsWithFill(table, view: self.view, indexPaths: paths, cellHeights: self.heights)
-		
-		self.view.beginUpdates()
-		self.view.endUpdates()
-		
-		completion()
+			self.heights = TableViewDataSource.updateIndexPathsWithFill(table, view: self.view, indexPaths: paths, cellHeights: self.heights)
+			
+			self.view.beginUpdates()
+			self.view.endUpdates()
+			
+			completion()
+		}
 	}
 	
 	public func startRefreshing() { self.isRefreshing = true }
@@ -211,53 +211,57 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 				return
 			}
 			
-			if let oldTable = oldTable, let newTable = newTable, Table.sameItemsCount(oldTable, newTable) {
-				let (changedIndexPaths, notVisibleIndexPaths) = Table.itemsChangedPaths(oldTable, newTable).partition {
-					indexPath in
-					return visibleIndexPaths?.contains(indexPath) ?? true
-				}
-				
-				for indexPath in notVisibleIndexPaths {
-					self.heights.removeValue(forKey: indexPath)
-				}
-				
-				DispatchQueue.main.async {
-					defer { completion?() }
-
-					if changedIndexPaths.count>0 {
-						self.heights = TableViewDataSource.updateIndexPathsWithFill(newTable, view: self.view, indexPaths: changedIndexPaths, cellHeights: self.heights)
-
-						if
-							let currentTable = self.table,
-							currentTable == newTable {
-							if #available(iOS 10.0, *) {
-								self.view.beginUpdates()
-								// Needed for accessory changes?? -> problem is it stops editing textfields, for example
-								// seems to be here for accessory changes, but maybe it's not needed??
-//								self.view.reloadRows(at: changedIndexPaths, with: .none)
-								self.view.endUpdates()
-							}
-							else {
-								self.view.reloadData()
-							}
-						}
-						else {
-							// If we are changing the table too quickly, we may get here. We shouldn't reload the table, because if we are editing a text field inside a cell, for example, we would stop editing.
-							// Can this cause problems?
-//							self.view.reloadData()
-						}
-					
-					}
-					else {
-						// NO CHANGES
-					}
-				}
-			}
+			guard
+				let oldTable = oldTable,
+				let newTable = newTable,
+				Table.sameItemsCount(oldTable, newTable)
 			else {
 				DispatchQueue.main.async {
 					self.view.reloadData()
 					self.heights.removeAll()
 					completion?()
+				}
+				return
+			}
+			
+			let (changedIndexPaths, notVisibleIndexPaths) = Table.itemsChangedPaths(oldTable, newTable).partition {
+				indexPath in
+				return visibleIndexPaths?.contains(indexPath) ?? true
+			}
+			
+			for indexPath in notVisibleIndexPaths {
+				self.heights.removeValue(forKey: indexPath)
+			}
+			
+			DispatchQueue.main.async {
+				defer { completion?() }
+				
+				if changedIndexPaths.count>0 {
+					self.heights = TableViewDataSource.updateIndexPathsWithFill(newTable, view: self.view, indexPaths: changedIndexPaths, cellHeights: self.heights)
+					
+					if
+						let currentTable = self.table,
+						currentTable == newTable {
+						if #available(iOS 10.0, *) {
+							self.view.beginUpdates()
+							// Needed for accessory changes?? -> problem is it stops editing textfields, for example
+							// seems to be here for accessory changes, but maybe it's not needed??
+							//								self.view.reloadRows(at: changedIndexPaths, with: .none)
+							self.view.endUpdates()
+						}
+						else {
+							self.view.reloadData()
+						}
+					}
+					else {
+						// If we are changing the table too quickly, we may get here. We shouldn't reload the table, because if we are editing a text field inside a cell, for example, we would stop editing.
+						// Can this cause problems?
+						//							self.view.reloadData()
+					}
+					
+				}
+				else {
+					// NO CHANGES
 				}
 			}
 		}

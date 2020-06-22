@@ -10,8 +10,8 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	public typealias Configuration = TableConfiguration
 	public typealias RowConfiguration = TableRowConfiguration<T>
 
-	fileprivate var estimatedHeights: [IndexPath: CGFloat] = [:]
-	fileprivate var heights: [IndexPath: CGFloat] = [:]
+	fileprivate var estimatedHeights: [String: CGFloat] = [:]
+	fileprivate var heights: [String: CGFloat] = [:]
 	fileprivate var registeredIds: [String] = []
 	
 	fileprivate var refreshControl: UIRefreshControl?
@@ -126,7 +126,12 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		DispatchQueue.main.async {
 			let paths = self.view.indexPathsForVisibleRows ?? []
 
-			self.heights = TableViewDataSource.updateIndexPathsWithFill(table, view: self.view, indexPaths: paths, cellHeights: self.heights)
+			self.heights = TableViewDataSource.updateIndexPathsWithFill(
+				table,
+				view: self.view,
+				indexPaths: paths,
+				cellHeights: self.heights
+			)
 			
 			self.view.beginUpdates()
 			self.view.endUpdates()
@@ -230,7 +235,11 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			}
 			
 			for indexPath in notVisibleIndexPaths {
-				self.heights.removeValue(forKey: indexPath)
+				let row = Table.rowAt(newTable, indexPath: indexPath)
+				
+				if let id = row?.id {
+					self.heights.removeValue(forKey: id)
+				}
 			}
 			
 			DispatchQueue.main.async {
@@ -411,7 +420,12 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		return result
 	}
 	
-	public static func updateIndexPathsWithFill(_ newTable: Table, view : UITableView, indexPaths: [IndexPath], cellHeights : [IndexPath: CGFloat]) -> [IndexPath: CGFloat] {
+	public static func updateIndexPathsWithFill(
+		_ newTable: Table,
+		view : UITableView,
+		indexPaths: [IndexPath],
+		cellHeights : [String: CGFloat]
+	) -> [String: CGFloat] {
 		var finalCellHeights = cellHeights
 		for indexPath in indexPaths {
 			guard let tableCell = view.cellForRow(at: indexPath) else {
@@ -423,13 +437,20 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			let item = Table.rowAt(newTable, indexPath: indexPath)
 			cell.fill(item!)
 
-			finalCellHeights[indexPath] = nil
+			if let id = item?.id {
+				finalCellHeights[id] = nil
+			}
 		}
 		
 		return finalCellHeights
 	}
 	
-	public static func updateIndexPathsWithFillAndReload(_ newTable: Table, view : UITableView, indexPaths: [IndexPath], cellHeights : [IndexPath: CGFloat]) -> [IndexPath: CGFloat] {
+	public static func updateIndexPathsWithFillAndReload(
+		_ newTable: Table,
+		view: UITableView,
+		indexPaths: [IndexPath],
+		cellHeights: [String: CGFloat]
+	) -> [String: CGFloat] {
 		let (editingPaths, nonEditingPaths) = self.editingIndexPaths(newTable, view: view, indexPaths: indexPaths)
 		for (indexPath, cell) in editingPaths {
 			
@@ -437,7 +458,6 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			
 			let item = Table.rowAt(newTable, indexPath: indexPath)
 			cell.fill(item!)
-		
 		}
 
 		view.reloadRows(at: nonEditingPaths, with: .none)
@@ -603,14 +623,24 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		if let tableConfiguration = self.table?.configuration, let fixedHeight = tableConfiguration.fixedRowHeight {
 			return fixedHeight
 		}
-		return self.estimatedHeights[indexPath] ?? tableView.estimatedRowHeight
+		
+		let estimatedHeight = self.table
+			.flatMap { Table.rowAt($0, indexPath: indexPath) }
+			.flatMap { self.estimatedHeights[$0.id] }
+		
+		return estimatedHeight ?? tableView.estimatedRowHeight
 	}
 	
 	open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 		if let tableConfiguration = self.table?.configuration, let fixedHeight = tableConfiguration.fixedRowHeight {
 			return fixedHeight
 		}
-		return self.heights[indexPath] ?? UITableView.automaticDimension
+		
+		let height = self.table
+			.flatMap { Table.rowAt($0, indexPath: indexPath) }
+			.flatMap { self.heights[$0.id] }
+		
+		return height ?? UITableView.automaticDimension
 	}
 	
 	open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -632,10 +662,15 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	open func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-		self.estimatedHeights[indexPath] = cell.frame.size.height
-		self.heights[indexPath] = cell.frame.size.height
+		let row = self.table
+			.flatMap { Table.rowAt($0, indexPath: indexPath) }
 		
-			guard
+		if let row = row {
+			self.estimatedHeights[row.id] = cell.frame.size.height
+			self.heights[row.id] = cell.frame.size.height
+		}
+		
+		guard
 			let aCell = cell as? TableViewCell<T>,
 			let view = aCell.view,
 			let table = self.table,
@@ -643,7 +678,6 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		else { return }
 		
 		self.onCellShow?(aCell, view, item, indexPath)
-
 	}
 	
 	public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

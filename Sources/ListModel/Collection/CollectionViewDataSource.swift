@@ -68,7 +68,7 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			_list = list
 		
 			CollectionViewDataSource.registerViews(self.list, collectionView: self.view)
-			self.update(oldValue, newList: list, completion: {})
+			self.update(oldValue, newList: list, completion: completion)
 		}
 	
 	fileprivate func update(

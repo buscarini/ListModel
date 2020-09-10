@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "ListModel"
-  s.version      = "0.3.8"
+  s.version      = "0.3.9"
   s.summary      = "View Models to simplify using tables, collection views"
   s.description  = <<-DESC
     Your description here.

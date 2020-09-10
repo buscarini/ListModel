@@ -118,6 +118,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			self._table = table
 		}
 		
+		self.headerHeights.removeAll()
+		self.footerHeights.removeAll()
+		
 		self.registerViews(table)
 		self.update(oldValue, newTable: table, completion: completion)
 	}

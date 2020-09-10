@@ -88,14 +88,16 @@ public extension Table {
 		fill: @escaping (HeaderT?, V) -> Void,
 		id: String,
 		reuseId: String = String(describing: V.self),
-		value: HeaderT? = nil
+		value: HeaderT? = nil,
+		height: CGFloat? = nil
 	) -> Table.Header {
 		return Table.Header.create(
 			viewConstructor: viewConstructor,
 			fill: fill,
 			id: id,
 			reuseId: reuseId,
-			value: value
+			value: value,
+			height: height
 		)
 	}
 	
@@ -105,14 +107,16 @@ public extension Table {
 		fill: @escaping (FooterT?, V) -> Void,
 		id: String,
 		reuseId: String = String(describing: V.self),
-		value: FooterT? = nil
+		value: FooterT? = nil,
+		height: CGFloat? = nil
 	) -> Footer {
 		return Footer.create(
 			viewConstructor: viewConstructor,
 			fill: fill,
 			id: id,
 			reuseId: reuseId,
-			value: value
+			value: value,
+			height: height
 		)
 	}
 }

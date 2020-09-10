@@ -64,7 +64,8 @@ public func ==<T>(lhs : TableRowConfiguration<T>, rhs: TableRowConfiguration<T>)
 	guard lhs.separatorInset == rhs.separatorInset else { return false }
 	guard lhs.selectionStyle == rhs.selectionStyle else { return false }
 	guard lhs.backgroundColor == rhs.backgroundColor else { return false }
-	
+	guard lhs.rowHeight == rhs.rowHeight else { return false }
+
 	return true
 }
 

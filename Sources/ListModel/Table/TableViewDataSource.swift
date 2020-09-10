@@ -603,14 +603,24 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		if let tableConfiguration = self.table?.configuration, let fixedHeight = tableConfiguration.fixedRowHeight {
 			return fixedHeight
 		}
-		return self.estimatedHeights[indexPath] ?? tableView.estimatedRowHeight
+		
+		let row = self.table.flatMap { Table.rowAt($0, indexPath: indexPath) }
+
+		return row?.configuration?.rowHeight
+			?? self.estimatedHeights[indexPath]
+			?? tableView.estimatedRowHeight
 	}
 	
 	open func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 		if let tableConfiguration = self.table?.configuration, let fixedHeight = tableConfiguration.fixedRowHeight {
 			return fixedHeight
 		}
-		return self.heights[indexPath] ?? UITableView.automaticDimension
+		
+		let row = self.table.flatMap { Table.rowAt($0, indexPath: indexPath) }
+		
+		return row?.configuration?.rowHeight
+			?? self.heights[indexPath]
+			?? UITableView.automaticDimension
 	}
 	
 	open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

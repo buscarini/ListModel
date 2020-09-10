@@ -9,24 +9,28 @@ import UIKit
 
 public struct TableRowConfiguration<T: Equatable>: Equatable {
 	public var accessoryType: TableRowAccessoryType
+	public var rowHeight: CGFloat?
 	public var onAccessoryTap: ((TableRow<T>)->())? = nil
 	public var swipeActions: [TableRowAction<T>]
-	public var indentationLevel : Int?
-	public var indentationWidth : CGFloat?
+	public var indentationLevel: Int?
+	public var indentationWidth: CGFloat?
 	public var separatorInset: UIEdgeInsets?
 	public var selectionStyle: TableRowSelectionStyle?
 	public var backgroundColor: UIColor?
 	
-	public init(accessoryType: TableRowAccessoryType = .none,
-				onAccessoryTap: ((TableRow<T>)->())? = nil,
-				swipeActions : [TableRowAction<T>] = [],
-				indentationLevel: Int? = nil,
-				indentationWidth: CGFloat? = nil,
-				separatorInset: UIEdgeInsets? = nil,
-				selectionStyle: TableRowSelectionStyle? = nil,
-				backgroundColor: UIColor? = UIColor.white
-		) {
+	public init(
+		accessoryType: TableRowAccessoryType = .none,
+		rowHeight: CGFloat? = nil,
+		onAccessoryTap: ((TableRow<T>)->())? = nil,
+		swipeActions : [TableRowAction<T>] = [],
+		indentationLevel: Int? = nil,
+		indentationWidth: CGFloat? = nil,
+		separatorInset: UIEdgeInsets? = nil,
+		selectionStyle: TableRowSelectionStyle? = nil,
+		backgroundColor: UIColor? = UIColor.white
+	) {
 		self.accessoryType = accessoryType
+		self.rowHeight = rowHeight
 		self.onAccessoryTap = onAccessoryTap
 		self.swipeActions = swipeActions
 		self.indentationLevel = indentationLevel
@@ -39,6 +43,7 @@ public struct TableRowConfiguration<T: Equatable>: Equatable {
 	public static var `default`: TableRowConfiguration {
 		return TableRowConfiguration(
 			accessoryType : .none,
+			rowHeight: nil,
 			onAccessoryTap: nil,
 			swipeActions: [],
 			indentationLevel: 0,

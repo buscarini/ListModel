@@ -14,6 +14,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	fileprivate var heights: [IndexPath: CGFloat] = [:]
 	fileprivate var registeredIds: [String] = []
 	
+	fileprivate var headerHeights: [Int: CGFloat] = [:]
+	fileprivate var footerHeights: [Int: CGFloat] = [:]
+	
 	fileprivate var refreshControl: UIRefreshControl?
 	
 	fileprivate lazy var tableQueue: DispatchQueue = DispatchQueue(label: "TableViewDataSource table queue", attributes: [])
@@ -79,6 +82,8 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	public func invalidateLayout() {
 		self.estimatedHeights = [:]
 		self.heights = [:]
+		self.headerHeights = [:]
+		self.footerHeights = [:]
 		self.view.beginUpdates()
 		self.view.endUpdates()
 	}
@@ -219,6 +224,8 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 				DispatchQueue.main.async {
 					self.view.reloadData()
 					self.heights.removeAll()
+					self.headerHeights.removeAll()
+					self.footerHeights.removeAll()
 					completion?()
 				}
 				return
@@ -626,19 +633,32 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
 		guard let table = self.table else { return 0 }
 		guard Table.sectionInsideBounds(table, section: section) else { return 0 }
+		
+		if let height = table.sections[section].header?.height {
+			return height
+		}
 
 		guard table.sections[section].header != nil else { return 0 }
 
-		return UITableView.automaticDimension
+		return headerHeights[section]
+			?? UITableView.automaticDimension
 	}
 	
-	open func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+	open func tableView(
+		_ tableView: UITableView,
+		heightForFooterInSection section: Int
+	) -> CGFloat {
 		guard let table = self.table else { return 0 }
 		guard Table.sectionInsideBounds(table, section: section) else { return 0 }
 
+		if let height = table.sections[section].footer?.height {
+			return height
+		}
+		
 		guard table.sections[section].footer != nil else { return 0 }
 
-		return UITableView.automaticDimension
+		return footerHeights[section]
+			?? UITableView.automaticDimension
 	}
 	
 	open func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
@@ -665,6 +685,14 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		else { return }
 		
 		self.onCellHide?(aCell, view, item, indexPath)
+	}
+	
+	public func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+		self.headerHeights[section] = view.frame.size.height
+	}
+	
+	public func tableView(_ tableView: UITableView, willDisplayFooterView view: UIView, forSection section: Int) {
+		self.footerHeights[section] = view.frame.size.height
 	}
 	
 	open func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

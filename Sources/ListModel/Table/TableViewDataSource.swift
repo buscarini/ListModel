@@ -12,7 +12,10 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 
 	fileprivate var estimatedHeights: [IndexPath: CGFloat] = [:]
 	fileprivate var heights: [IndexPath: CGFloat] = [:]
-	fileprivate var registeredIds: [String] = []
+	
+	fileprivate var registeredHeaderIds: [String] = []
+	fileprivate var registeredCellIds: [String] = []
+	fileprivate var registeredFooterIds: [String] = []
 	
 	fileprivate var headerHeights: [Int: CGFloat] = [:]
 	fileprivate var footerHeights: [Int: CGFloat] = [:]
@@ -55,7 +58,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	fileprivate func viewChanged() {
-		self.registeredIds.removeAll()
+		self.registeredHeaderIds.removeAll()
+		self.registeredCellIds.removeAll()
+		self.registeredFooterIds.removeAll()
 		
 		self.registerViews(self.table)
 			
@@ -487,18 +492,63 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	public func registerViews(_ table: Table?) {
-		self.registeredIds.append(contentsOf:
-			Self.registerViews(table, tableView: self.view)
+		self.registeredHeaderIds.append(contentsOf:
+			Self.registerHeaders(table, tableView: self.view)
+		)
+		
+		self.registeredCellIds.append(contentsOf:
+			Self.registerCells(table, tableView: self.view)
+		)
+		
+		self.registeredFooterIds.append(contentsOf:
+			Self.registerFooters(table, tableView: self.view)
 		)
 	}
 	
-	public static func registerViews(_ table: Table?, tableView : UITableView?) -> [String] {
+	public static func registerHeaders(
+		_ table: Table?,
+		tableView: UITableView?
+	) -> [String] {
+		guard let table = table else { return [] }
+		guard let tableView = tableView else { return [] }
+		
+		let allReusableIds = Table.allHeaderIds(table)
+		for reusableId in allReusableIds {
+			tableView.register(
+				TableHeaderFooterView<T>.self,
+				forHeaderFooterViewReuseIdentifier: "h_\(reusableId)"
+			)
+		}
+		return allReusableIds
+	}
+	
+	public static func registerCells(_ table: Table?, tableView : UITableView?) -> [String] {
 		guard let table = table else { return [] }
 		guard let tableView = tableView else { return [] }
 		
 		let allReusableIds = Table.allReusableIds(table)
 		for reusableId in allReusableIds {
-			tableView.register(TableViewCell<T>.self, forCellReuseIdentifier: reusableId)
+			tableView.register(
+				TableViewCell<T>.self,
+				forCellReuseIdentifier: reusableId
+			)
+		}
+		return allReusableIds
+	}
+	
+	public static func registerFooters(
+		_ table: Table?,
+		tableView: UITableView?
+	) -> [String] {
+		guard let table = table else { return [] }
+		guard let tableView = tableView else { return [] }
+		
+		let allReusableIds = Table.allFooterIds(table)
+		for reusableId in allReusableIds {
+			tableView.register(
+				TableHeaderFooterView<T>.self,
+				forHeaderFooterViewReuseIdentifier: "f_\(reusableId)"
+			)
 		}
 		return allReusableIds
 	}
@@ -538,7 +588,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 
 		let reusableId = row.reuseId
 		
-		guard self.registeredIds.contains(reusableId) else {
+		guard self.registeredCellIds.contains(reusableId) else {
 			debugPrint("Not registered yet")
 			return UITableViewCell()
 		}
@@ -572,7 +622,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
 		guard let table = self.table else { return nil }
 		guard Table.sectionInsideBounds(table, section: section) else { return nil }
-		
+				
 		return table.sections[section].header?.createView(self)
 	}
 	

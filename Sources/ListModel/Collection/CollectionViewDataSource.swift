@@ -22,6 +22,8 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	
 	public var scrollDelegate = ScrollViewDelegate()
 	public var flowLayoutDelegate = FlowLayoutDelegate()
+	
+	fileprivate lazy var updateQueue: DispatchQueue = DispatchQueue(label: "TableViewDataSource update queue", attributes: [])
 
 	public init(view: UICollectionView) {
 		self.view = view
@@ -119,26 +121,30 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			
 			let visibleIndexPaths = view.indexPathsForVisibleItems
 			
-			let (changedIndexPaths, _) = List.itemsChangedPaths(oldList, newList).partition { indexPath in
-				return visibleIndexPaths.contains(indexPath)
-			}
-			
-			guard changedIndexPaths.count > 0 else {
-				return
-			}
-			
-			for indexPath in changedIndexPaths {
-				guard let cell = view.cellForItem(at: indexPath) as? CollectionViewCell<T> else { continue }
-				let listItem = newList.sections[indexPath.section].items[indexPath.item]
+			self.updateQueue.async {
+				let (changedIndexPaths, _) = List.itemsChangedPaths(oldList, newList).partition { indexPath in
+					return visibleIndexPaths.contains(indexPath)
+				}
 				
-				onWillConfigureCell?(cell, cell.view, listItem, indexPath)
+				guard changedIndexPaths.count > 0 else {
+					return
+				}
 				
-				cell.fill(listItem)
-				
-				onDidConfigureCell?(cell, cell.view, listItem, indexPath)
+				DispatchQueue.main.async {
+					for indexPath in changedIndexPaths {
+						guard let cell = self.view.cellForItem(at: indexPath) as? CollectionViewCell<T> else { continue }
+						let listItem = newList.sections[indexPath.section].items[indexPath.item]
+						
+						self.onWillConfigureCell?(cell, cell.view, listItem, indexPath)
+						
+						cell.fill(listItem)
+						
+						self.onDidConfigureCell?(cell, cell.view, listItem, indexPath)
+					}
+					
+					completion()
+				}
 			}
-			
-			completion()
 		}
 		else {
 			self.view.reloadData()

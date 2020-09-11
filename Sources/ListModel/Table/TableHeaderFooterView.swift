@@ -13,18 +13,18 @@ open class TableHeaderFooterView<T: Equatable>: UITableViewHeaderFooterView {
 }
 
 extension TableHeaderFooterView {
-	public func fill(_ row: TableHeaderFooter<T>) {
+	public func fill(_ model: TableHeaderFooter<T>) {
 		defer {
-			self.reuseId = row.reuseId
+			self.reuseId = model.reuseId
 		}
 		
 		let subview: UIView
 		
-		if let view = view, reuseId == row.reuseId {
+		if let view = view, reuseId == model.reuseId {
 			subview = view
 		}
 		else {
-			subview = row.viewConstructor()
+			subview = model.viewConstructor()
 			view?.removeFromSuperview()
 			view = subview
 			self.contentView.addSubview(subview)
@@ -32,6 +32,6 @@ extension TableHeaderFooterView {
 			LayoutUtils.fill(self.contentView,view: subview)
 		}
 		
-		row.fill(row.value, subview)
+		model.fill(model.value, subview)
 	}
 }

@@ -515,11 +515,17 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		let allReusableIds = Table.allHeaderIds(table)
 		for reusableId in allReusableIds {
 			tableView.register(
-				TableHeaderFooterView<T>.self,
-				forHeaderFooterViewReuseIdentifier: "h_\(reusableId)"
+				TableHeaderFooterView<HeaderT>.self,
+				forHeaderFooterViewReuseIdentifier: headerReuseId( reusableId)
 			)
 		}
 		return allReusableIds
+	}
+	
+	public static func headerReuseId(
+		_ reuseId: String
+	) -> String {
+		"h_\(reuseId)"
 	}
 	
 	public static func registerCells(_ table: Table?, tableView : UITableView?) -> [String] {
@@ -546,11 +552,17 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		let allReusableIds = Table.allFooterIds(table)
 		for reusableId in allReusableIds {
 			tableView.register(
-				TableHeaderFooterView<T>.self,
-				forHeaderFooterViewReuseIdentifier: "f_\(reusableId)"
+				TableHeaderFooterView<FooterT>.self,
+				forHeaderFooterViewReuseIdentifier: self.footerReuseId(reusableId)
 			)
 		}
 		return allReusableIds
+	}
+	
+	public static func footerReuseId(
+		_ reuseId: String
+	) -> String {
+		"f_\(reuseId)"
 	}
 	
 	// MARK: Pull to Refresh
@@ -620,17 +632,38 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	public func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-		guard let table = self.table else { return nil }
-		guard Table.sectionInsideBounds(table, section: section) else { return nil }
-				
-		return table.sections[section].header?.createView(self)
+		guard
+			let table = self.table,
+			Table.sectionInsideBounds(table, section: section),
+			let header = table.sections[section].header
+		else { return nil }
+		
+		let headerView = tableView.dequeueReusableHeaderFooterView(
+				withIdentifier: Self.headerReuseId(header.reuseId)
+			) as? TableHeaderFooterView<HeaderT>
+			?? TableHeaderFooterView<HeaderT>()
+
+		headerView.fill(header)
+		
+		return headerView
 	}
 	
 	public func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-		guard let table = self.table else { return nil }
-		guard Table.sectionInsideBounds(table, section: section) else { return nil }
-
-		return table.sections[section].footer?.createView(self)
+		guard
+			let table = self.table,
+			Table.sectionInsideBounds(table, section: section),
+			let footer = table.sections[section].footer
+		else { return nil }
+		
+		
+		let footerView = tableView.dequeueReusableHeaderFooterView(
+				withIdentifier: Self.footerReuseId(footer.reuseId)
+			) as? TableHeaderFooterView<FooterT>
+			?? TableHeaderFooterView<FooterT>()
+		
+		footerView.fill(footer)
+		
+		return footerView
 	}
 	
 	// MARK: UITableViewDataPrefetching

@@ -1,6 +1,6 @@
 import UIKit
 
-public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT: Equatable>: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT: Equatable>: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDataSourcePrefetching {
 
 	public typealias List = ListModel.List<T, HeaderT, FooterT>
 	public typealias Section = List.Section
@@ -20,7 +20,9 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	public var onDidConfigureCell: CellDisplayEvent?
 	public var onCellHide: CellDisplayEvent?
 	
+	public var prefetching = ListDataPrefetching()
 	public var scrollDelegate = ScrollViewDelegate()
+	
 	public var flowLayoutDelegate = FlowLayoutDelegate()
 	
 	fileprivate lazy var updateQueue: DispatchQueue = DispatchQueue(label: "TableViewDataSource update queue", attributes: [])
@@ -379,6 +381,15 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	
 	public func viewForZooming(in scrollView: UIScrollView) -> UIView? {
 		return scrollDelegate.viewForZooming?(scrollView)
+	}
+	
+	// MARK: UICollectionViewDataSourcePrefetching
+	public func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+		self.prefetching.prefetchRows(collectionView, indexPaths)
+	}
+	
+	public func collectionView(_ collectionView: UICollectionView, cancelPrefetchingForItemsAt indexPaths: [IndexPath]) {
+		self.prefetching.cancelPrefetching(collectionView, indexPaths)
 	}
 	
 	// MARK: UICollectionViewFlowDelegate

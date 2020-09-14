@@ -22,6 +22,7 @@
 
 /* Begin PBXBuildFile section */
 		AC803E05250B8BAA0082D676 /* TableHeaderFooterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC803E04250B8BAA0082D676 /* TableHeaderFooterView.swift */; };
+		AC803EEB250F46EC0082D676 /* ListDataPrefetching.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC803EEA250F46EC0082D676 /* ListDataPrefetching.swift */; };
 		OBJ_108 /* Alias.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Alias.swift */; };
 		OBJ_109 /* CollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* CollectionViewCell.swift */; };
 		OBJ_110 /* CollectionViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* CollectionViewDataSource.swift */; };
@@ -118,6 +119,7 @@
 
 /* Begin PBXFileReference section */
 		AC803E04250B8BAA0082D676 /* TableHeaderFooterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableHeaderFooterView.swift; sourceTree = "<group>"; };
+		AC803EEA250F46EC0082D676 /* ListDataPrefetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListDataPrefetching.swift; sourceTree = "<group>"; };
 		"ListModel::ListModel::Product" /* ListModel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ListModel.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"ListModel::ListModelTests::Product" /* ListModelTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = ListModelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		OBJ_100 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				OBJ_13 /* CollectionViewReusableView.swift */,
 				OBJ_14 /* Layouts */,
 				OBJ_16 /* Model */,
+				AC803EEA250F46EC0082D676 /* ListDataPrefetching.swift */,
 			);
 			path = Collection;
 			sourceTree = "<group>";
@@ -317,7 +320,7 @@
 			path = Scroll;
 			sourceTree = "<group>";
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -330,7 +333,6 @@
 				OBJ_101 /* ListModel.podspec */,
 				OBJ_102 /* README.md */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_56 /* Search */ = {
@@ -505,7 +507,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_95 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -528,6 +530,7 @@
 				OBJ_110 /* CollectionViewDataSource.swift in Sources */,
 				OBJ_111 /* CollectionViewReusableView.swift in Sources */,
 				OBJ_112 /* ColumnsRowsLayout.swift in Sources */,
+				AC803EEB250F46EC0082D676 /* ListDataPrefetching.swift in Sources */,
 				OBJ_113 /* List+Constructors.swift in Sources */,
 				OBJ_114 /* List+Filtrable.swift in Sources */,
 				OBJ_115 /* List+Utils.swift in Sources */,

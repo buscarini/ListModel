@@ -68,12 +68,48 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	}
 	
 	public func update(list: List?, completion: @escaping () -> Void) {
-			let oldValue = _list
-			_list = list
+		let oldValue = _list
+		_list = list
 		
-			CollectionViewDataSource.registerViews(self.list, collectionView: self.view)
-			self.update(oldValue, newList: list, completion: completion)
+		CollectionViewDataSource.registerViews(self.list, collectionView: self.view)
+		self.update(oldValue, newList: list, completion: completion)
+	}
+	
+	public func reloadVisible(completion: @escaping () -> Void) {
+		guard let list = self.list else {
+			completion()
+			return
 		}
+		
+		DispatchQueue.main.async {
+			let paths = self.view.indexPathsForVisibleItems
+
+			Self.updateIndexPathsWithFill(
+				list,
+				view: self.view,
+				indexPaths: paths
+			)
+			
+			completion()
+		}
+	}
+	
+	public static func updateIndexPathsWithFill(
+		_ newList: List,
+		view: UICollectionView,
+		indexPaths: [IndexPath]
+	) {
+		for indexPath in indexPaths {
+			guard let listCell = view.cellForItem(at: indexPath) else {
+				continue
+			}
+			
+			let cell = listCell as! CollectionViewCell<T>
+			
+			let item = List.itemAt(newList, indexPath: indexPath)
+			cell.fill(item!)
+		}
+	}
 	
 	fileprivate func update(
 		_ oldList: List?,

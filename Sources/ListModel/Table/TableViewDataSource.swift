@@ -283,16 +283,24 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	}
 	
 	fileprivate func tableHeaderView(_ newTable: Table?) -> UIView? {
-		if let headerView = newTable?.header?.createView(self) {
-			headerView.translatesAutoresizingMaskIntoConstraints = false
-			return headerView
+		guard let header = newTable?.header else {
+			return nil
 		}
 		
-		return nil
+		let headerView = header.createView(self)
+		headerView.translatesAutoresizingMaskIntoConstraints = false
+		headerView.autoresizingMask = [ .flexibleWidth, .flexibleBottomMargin ]
+		
+		if let height = header.height {
+			headerView.frame = CGRect(origin: .zero, size: CGSize(width: self.view.bounds.width, height: height))
+		}
+		
+		return headerView
 	}
 	
 	fileprivate func tableFooterView(_ newTable: Table?) -> UIView? {
-		if let footerView = newTable?.footer?.createView(self) {
+		if let footer = newTable?.footer {
+			let footerView = footer.createView(self)
 			self.layout(view: footerView, inWidth: self.view.bounds.size.width)
 			return footerView
 		}
@@ -716,6 +724,20 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			?? UITableView.automaticDimension
 	}
 	
+	public func tableView(_ tableView: UITableView, estimatedHeightForHeaderInSection section: Int) -> CGFloat {
+		guard let table = self.table else { return 0 }
+		guard Table.sectionInsideBounds(table, section: section) else { return 0 }
+
+		if let height = table.sections[section].header?.height {
+			return height
+		}
+
+		guard table.sections[section].header != nil else { return 0 }
+
+		return headerHeights[section]
+			?? UITableView.automaticDimension
+	}
+	
 	open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
 		guard let table = self.table else { return 0 }
 		guard Table.sectionInsideBounds(table, section: section) else { return 0 }
@@ -727,6 +749,20 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		guard table.sections[section].header != nil else { return 0 }
 
 		return headerHeights[section]
+			?? UITableView.automaticDimension
+	}
+	
+	public func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {
+		guard let table = self.table else { return 0 }
+		guard Table.sectionInsideBounds(table, section: section) else { return 0 }
+
+		if let height = table.sections[section].footer?.height {
+			return height
+		}
+
+		guard table.sections[section].footer != nil else { return 0 }
+
+		return footerHeights[section]
 			?? UITableView.automaticDimension
 	}
 	

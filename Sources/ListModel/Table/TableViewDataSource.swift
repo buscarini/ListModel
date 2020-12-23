@@ -735,7 +735,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		guard table.sections[section].header != nil else { return 0 }
 
 		return headerHeights[section]
-			?? UITableView.automaticDimension
+			?? tableView.estimatedSectionHeaderHeight
 	}
 	
 	open func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
@@ -749,7 +749,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		guard table.sections[section].header != nil else { return 0 }
 
 		return headerHeights[section]
-			?? UITableView.automaticDimension
+			?? tableView.estimatedSectionFooterHeight
 	}
 	
 	public func tableView(_ tableView: UITableView, estimatedHeightForFooterInSection section: Int) -> CGFloat {

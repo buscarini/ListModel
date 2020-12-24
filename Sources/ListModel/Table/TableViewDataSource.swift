@@ -89,6 +89,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		self.heights = [:]
 		self.headerHeights = [:]
 		self.footerHeights = [:]
+	}
+	
+	public func updateLayout() {
 		self.view.beginUpdates()
 		self.view.endUpdates()
 	}

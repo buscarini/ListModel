@@ -27,6 +27,10 @@ public extension Table {
 	}
 	
 	static func indexPathInsideBounds(_ table: Table, indexPath: IndexPath) -> Bool {
+		guard indexPath.count == 2 else { // Avoid crash with table view sometimes returning invalid index paths
+			return false
+		}
+		
 		switch (indexPath.section, indexPath.row) {
 		case (let section, _) where section >= table.sections.count:
 			return false

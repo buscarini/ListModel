@@ -446,8 +446,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			
 			let cell = tableCell as! TableViewCell<T>
 			
-			let item = Table.rowAt(newTable, indexPath: indexPath)
-			cell.fill(item!)
+			if let item = Table.rowAt(newTable, indexPath: indexPath) {
+				cell.fill(item)
+			}
 
 			finalCellHeights[indexPath] = nil
 		}
@@ -461,9 +462,9 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 			
 			let cell = cell as! TableViewCell<T>
 			
-			let item = Table.rowAt(newTable, indexPath: indexPath)
-			cell.fill(item!)
-		
+			if let item = Table.rowAt(newTable, indexPath: indexPath) {
+				cell.fill(item)
+			}
 		}
 
 		view.reloadRows(at: nonEditingPaths, with: .none)

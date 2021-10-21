@@ -24,6 +24,7 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	
 	fileprivate lazy var tableQueue: DispatchQueue = DispatchQueue(label: "TableViewDataSource table queue", attributes: [])
 	fileprivate lazy var updateQueue: DispatchQueue = DispatchQueue(label: "TableViewDataSource update queue", attributes: [])
+	fileprivate var updateWorkItem: DispatchWorkItem?
 
 	public typealias SizeChanged = (CGSize) -> ()
 	public var contentSizeChanged: SizeChanged?
@@ -122,15 +123,16 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	
 	public func update(table: Table?, completion: @escaping () -> Void) {
 		let oldValue = self.table
-		tableQueue.async {
-			self._table = table
-		}
-		
 		self.headerHeights.removeAll()
 		self.footerHeights.removeAll()
 		
-		self.registerViews(table)
-		self.update(oldValue, newTable: table, completion: completion)
+		self.update(oldValue, newTable: table) { [weak self] in
+			completion()
+			
+//			guard let self = self else {
+//				return
+//			}
+		}
 	}
 	
 	public func reloadVisible(completion: @escaping () -> Void) {
@@ -173,6 +175,12 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 	
 	fileprivate func update(_ oldTable: Table?, newTable: Table?, completion: @escaping () -> Void) {
 		self.updateSections(oldTable, newTable: newTable) {
+			self.tableQueue.async {
+				self._table = newTable
+			}
+			
+			self.registerViews(self.table)
+			
 			UIView.performWithoutAnimation {
 				self.view.layoutIfNeeded()
 			}
@@ -213,16 +221,18 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		let visibleIndexPaths = self.view.indexPathsForVisibleRows
 		
 		guard self.needsUpdate == false else {
-			self.view.reloadData()
 			completion?()
+			self.view.reloadData()
 			return
 		}
 	
-		self.updateQueue.async {
+		
+		let workItem = DispatchWorkItem(qos: .userInitiated, flags: []) {
+//		self.updateQueue.async {
 			guard Self.headersChanged(oldTable, newTable) == false else {
 				DispatchQueue.main.async {
-					self.view.reloadData()
 					completion?()
+					self.view.reloadData()
 				}
 				return
 			}
@@ -233,11 +243,12 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 				Table.sameItemsCount(oldTable, newTable)
 			else {
 				DispatchQueue.main.async {
-					self.view.reloadData()
+					
 					self.heights.removeAll()
 					self.headerHeights.removeAll()
 					self.footerHeights.removeAll()
 					completion?()
+					self.view.reloadData()
 				}
 				return
 			}
@@ -247,15 +258,17 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 				return visibleIndexPaths?.contains(indexPath) ?? true
 			}
 			
-			for indexPath in notVisibleIndexPaths {
-				self.heights.removeValue(forKey: indexPath)
-			}
-			
 			DispatchQueue.main.async {
-				defer { completion?() }
+				for indexPath in notVisibleIndexPaths {
+					self.heights.removeValue(forKey: indexPath)
+				}
+				
+//				defer { completion?() }
 				
 				if changedIndexPaths.count>0 {
 					self.heights = TableViewDataSource.updateIndexPathsWithFill(newTable, view: self.view, indexPaths: changedIndexPaths, cellHeights: self.heights)
+					
+					completion?()
 					
 					if
 						let currentTable = self.table,
@@ -280,9 +293,14 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 				}
 				else {
 					// NO CHANGES
+					completion?()
 				}
 			}
 		}
+		
+		self.updateWorkItem?.cancel()
+		self.updateWorkItem = workItem
+		self.updateQueue.async(execute: workItem)
 	}
 	
 	fileprivate func tableHeaderView(_ newTable: Table?) -> UIView? {

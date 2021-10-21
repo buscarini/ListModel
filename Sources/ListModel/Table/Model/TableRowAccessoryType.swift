@@ -44,7 +44,7 @@ public func ==(left: TableRowAccessoryType, right: TableRowAccessoryType) -> Boo
 
 
 extension TableRowAccessoryType {
-	var cellAccessoryType: UITableViewCell.AccessoryType {
+	public var cellAccessoryType: UITableViewCell.AccessoryType {
 		switch self {
 			case .none:
 				return .none
@@ -61,7 +61,7 @@ extension TableRowAccessoryType {
 		}
 	}
 	
-	var cellAccessoryView: UIView? {
+	public var cellAccessoryView: UIView? {
 		switch self {
 			case .view(let f):
 				return f()

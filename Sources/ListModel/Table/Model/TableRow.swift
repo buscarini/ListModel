@@ -17,8 +17,8 @@ public struct TableRow<T: Equatable>: Equatable {
 	let viewConstructor: ViewConstructor
 	let fill: Fill
 	
-	var id: String
-	var reuseId: String
+	public var id: String
+	public var reuseId: String
 	public var value: T?
 	
 	/// View Specific Configuration

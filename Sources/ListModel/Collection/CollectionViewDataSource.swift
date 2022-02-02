@@ -160,15 +160,15 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			let visibleIndexPaths = view.indexPathsForVisibleItems
 			
 			self.updateQueue.async {
-				let (changedIndexPaths, _) = List.itemsChangedPaths(oldList, newList).partition { indexPath in
-					return visibleIndexPaths.contains(indexPath)
-				}
-				
-				guard changedIndexPaths.count > 0 else {
-					return
-				}
-				
+				let (changedIndexPaths, _) = List.itemsChangedPaths(oldList, newList)
+					.partition(by: visibleIndexPaths.contains)
+
 				DispatchQueue.main.async {
+					guard changedIndexPaths.count > 0 else {
+						completion()
+						return
+					}
+					
 					for indexPath in changedIndexPaths {
 						guard let cell = self.view.cellForItem(at: indexPath) as? CollectionViewCell<T> else { continue }
 						let listItem = newList.sections[indexPath.section].items[indexPath.item]

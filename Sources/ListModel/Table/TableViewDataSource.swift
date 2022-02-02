@@ -126,12 +126,8 @@ public class TableViewDataSource<T:Equatable, HeaderT: Equatable, FooterT: Equat
 		self.headerHeights.removeAll()
 		self.footerHeights.removeAll()
 		
-		self.update(oldValue, newTable: table) { [weak self] in
+		self.update(oldValue, newTable: table) {
 			completion()
-			
-//			guard let self = self else {
-//				return
-//			}
 		}
 	}
 	

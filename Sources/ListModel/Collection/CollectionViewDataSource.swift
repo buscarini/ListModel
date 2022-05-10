@@ -106,8 +106,12 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			
 			let cell = listCell as! CollectionViewCell<T>
 			
-			let item = List.itemAt(newList, indexPath: indexPath)
-			cell.fill(item!)
+			guard let item = List.itemAt(newList, indexPath: indexPath) else {
+				view.reloadData()
+				return
+			}
+			
+			cell.fill(item)
 		}
 	}
 	

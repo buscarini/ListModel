@@ -304,26 +304,25 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 		let view: UICollectionReusableView
 		switch kind {
 			case UICollectionView.elementKindSectionHeader:
-				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: viewId, for: indexPath)
-
 				guard let header = list.sections[section].header else {
 					print("Header not found for section \(section)")
-					return view
+					return UICollectionReusableView()
 				}
 				
 				let viewId = header.reuseId
+				
+				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: viewId, for: indexPath)
 		
 				let cell = view as! CollectionViewReusableView<HeaderT>
 				cell.fill(header)
 			
 			case UICollectionView.elementKindSectionFooter:
-				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: footer.reuseId, for: indexPath)
-
 				guard let footer = list.sections[section].footer else {
 					print("Footer not found for section \(section)")
-					return view
+					return UICollectionReusableView()
 				}
 				
+				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: footer.reuseId, for: indexPath)
 		
 				let cell = view as! CollectionViewReusableView<FooterT>
 				cell.fill(footer)
@@ -475,6 +474,10 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	}
 	
 	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+		guard list?.sections[section].header != nil else {
+			return .zero
+		}
+		
 		let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout
 		return flowLayoutDelegate.headerReferenceSize?(section, collectionViewLayout, collectionView)
 			?? flowLayout?.headerReferenceSize
@@ -482,12 +485,13 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	}
 	
 	public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+		guard list?.sections[section].footer != nil else {
+			return .zero
+		}
+		
 		let flowLayout = collectionViewLayout as? UICollectionViewFlowLayout
 		return flowLayoutDelegate.footerReferenceSize?(section, collectionViewLayout, collectionView)
 			?? flowLayout?.footerReferenceSize
 			?? UICollectionViewFlowLayout.automaticSize
 	}
-
-	
 }
-

@@ -226,21 +226,21 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	}
 	
 	public static func registerViews(_ list: List?, collectionView: UICollectionView?) {
-		guard let list = list else { return }
+		guard let list = list, let collectionView = collectionView else { return }
 		
 		let allReusableIds = List.allReusableIds(list)
 		for reusableId in allReusableIds {
-			collectionView?.register(CollectionViewCell<T>.self, forCellWithReuseIdentifier: reusableId)
+			collectionView.register(CollectionViewCell<T>.self, forCellWithReuseIdentifier: reusableId)
 		}
 		
 		let allHeaderIds = List.allHeaderIds(list)
 		for reusableId in allHeaderIds {
-			collectionView?.register(CollectionViewReusableView<HeaderT>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: reusableId)
+			collectionView.register(CollectionViewReusableView<HeaderT>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: reusableId)
 		}
 		
 		let allFooterIds = List.allFooterIds(list)
 		for reusableId in allFooterIds {
-			collectionView!.register(CollectionViewReusableView<FooterT>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: reusableId)
+			collectionView.register(CollectionViewReusableView<FooterT>.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: reusableId)
 		}
 	}
 	
@@ -304,7 +304,11 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 		let view: UICollectionReusableView
 		switch kind {
 			case UICollectionView.elementKindSectionHeader:
-				let header = list.sections[section].header!
+				guard let header = list.sections[section].header else {
+					print("Header not found for section \(section)")
+					return UICollectionReusableView()
+				}
+				
 				let viewId = header.reuseId
 				
 				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: viewId, for: indexPath)
@@ -313,7 +317,11 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 				cell.fill(header)
 			
 			case UICollectionView.elementKindSectionFooter:
-				let footer = list.sections[section].footer!
+				guard let footer = list.sections[section].footer else {
+					print("Footer not found for section \(section)")
+					return UICollectionReusableView()
+				}
+				
 				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: footer.reuseId, for: indexPath)
 		
 				let cell = view as! CollectionViewReusableView<FooterT>
@@ -332,12 +340,12 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 	public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 		guard
 			let list = self.list,
-			List.indexPathInsideBounds(list, indexPath: indexPath)
+			List.indexPathInsideBounds(list, indexPath: indexPath),
+			let listItem = List.itemAt(list, indexPath: indexPath)
 		else {
 			return
 		}
 		
-		let listItem = List.itemAt(list, indexPath: indexPath)!
 		if let onSelect = listItem.onSelect {
 			onSelect(listItem)
 		}
@@ -349,7 +357,9 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			let view = aCell.view,
 			let list = self.list,
 			let item = List.itemAt(list, indexPath: indexPath)
-		else { return }
+		else {
+			return
+		}
 		
 		self.onCellShow?(aCell, view, item, indexPath)
 		
@@ -361,7 +371,9 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 			let view = aCell.view,
 			let list = self.list,
 			let item = List.itemAt(list, indexPath: indexPath)
-		else { return }
+		else {
+			return
+		}
 		
 		self.onCellHide?(aCell, view, item, indexPath)
 

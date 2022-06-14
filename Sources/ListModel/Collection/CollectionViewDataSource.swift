@@ -304,25 +304,26 @@ public class CollectionViewDataSource<T: Equatable, HeaderT: Equatable, FooterT:
 		let view: UICollectionReusableView
 		switch kind {
 			case UICollectionView.elementKindSectionHeader:
+				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: viewId, for: indexPath)
+
 				guard let header = list.sections[section].header else {
 					print("Header not found for section \(section)")
-					return UICollectionReusableView()
+					return view
 				}
 				
 				let viewId = header.reuseId
-				
-				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: viewId, for: indexPath)
 		
 				let cell = view as! CollectionViewReusableView<HeaderT>
 				cell.fill(header)
 			
 			case UICollectionView.elementKindSectionFooter:
+				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: footer.reuseId, for: indexPath)
+
 				guard let footer = list.sections[section].footer else {
 					print("Footer not found for section \(section)")
-					return UICollectionReusableView()
+					return view
 				}
 				
-				view = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: footer.reuseId, for: indexPath)
 		
 				let cell = view as! CollectionViewReusableView<FooterT>
 				cell.fill(footer)
